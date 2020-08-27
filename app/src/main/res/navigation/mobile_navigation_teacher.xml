@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/profile">
+
+
+
+    <fragment
+        android:id="@+id/navigation_dashboard"
+        android:name="com.murad.project1.activites.ui.dashboard_teacher.DashboardFragment_teacher"
+        android:label="@string/title_dashboard"
+        tools:layout="@layout/fragment_dashboard" >
+        <action
+            android:id="@+id/action_navigation_dashboard_to_profile"
+            app:destination="@id/profile" />
+        <action
+            android:id="@+id/action_navigation_dashboard_to_lessonInformation2"
+            app:destination="@id/lessonInformation2" />
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/profile"
+        android:name="com.murad.project1.activites.ui.preDefinedFragments.Profile"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profile_to_allRequests"
+            app:destination="@id/allRequests" />
+        <action
+            android:id="@+id/action_profile_to_navigation_dashboard"
+            app:destination="@id/navigation_dashboard" />
+
+
+    </fragment>
+    <fragment
+        android:id="@+id/allRequests"
+        android:name="com.murad.project1.activites.ui.preDefinedFragments.allRequests"
+        android:label="fragment_all_requests"
+        tools:layout="@layout/fragment_all_requests" >
+        <action
+            android:id="@+id/action_allRequests_to_profile"
+            app:destination="@id/profile" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/lessonInformation2"
+        android:name="com.murad.project1.activites.student_activites.LessonInformation"
+        android:label="fragment_lesson_information"
+        tools:layout="@layout/fragment_lesson_information" >
+        <action
+            android:id="@+id/action_lessonInformation2_to_navigation_dashboard"
+            app:destination="@id/navigation_dashboard" />
+    </fragment>
+
+</navigation>

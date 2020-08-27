@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    android:label="Exam"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.murad.project1.activites.student_activites.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_nav_home_to_moreTeachDetails"
+            app:destination="@id/moreTeachDetails" />
+        <action
+            android:id="@+id/action_nav_home_to_studentMessages"
+            app:destination="@id/studentMessages" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_profile"
+        android:name="com.murad.project1.activites.student_activites.ui.Profile_student.Student_profile"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile_student" >
+        <action
+            android:id="@+id/action_nav_profile_to_lessonInformation"
+            app:destination="@id/lessonInformation" />
+        <action
+            android:id="@+id/action_nav_profile_to_moreTeachDetails"
+            app:destination="@id/moreTeachDetails" />
+        <action
+            android:id="@+id/action_nav_profile_to_nav_home"
+            app:destination="@id/nav_home" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_slideshow"
+        android:name="com.murad.project1.activites.student_activites.ui.Exams.ExamsFragment"
+        android:label="Exam"
+        tools:layout="@layout/fragment_exams">
+        <action
+            android:id="@+id/action_nav_slideshow_to_questionsFragment"
+            app:destination="@id/questionsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_tools"
+        android:name="com.murad.project1.activites.student_activites.ui.StudyFragment.StudyFragment"
+        android:label="Study Material"
+        tools:layout="@layout/fragment_study" >
+        <action
+            android:id="@+id/action_nav_tools_to_bookFragment"
+            app:destination="@id/bookFragment" />
+        <action
+            android:id="@+id/action_nav_tools_to_signFragment"
+            app:destination="@id/signFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_share"
+        android:name="com.murad.project1.activites.student_activites.ui.share.ShareFragment"
+        android:label="@string/menu_share"
+        tools:layout="@layout/fragment_share" />
+
+    <fragment
+        android:id="@+id/nav_send"
+        android:name="com.murad.project1.activites.student_activites.ui.send.SendFragment"
+        android:label="@string/menu_send"
+        tools:layout="@layout/fragment_send" />
+    <fragment
+        android:id="@+id/moreTeachDetails"
+        android:name="com.murad.project1.activites.student_activites.moreTeachDetails"
+        android:label="Trainer Details"
+        tools:layout="@layout/fragment_more_teach_details" />
+    <fragment
+        android:id="@+id/questionsFragment"
+        android:name="com.murad.project1.activites.student_activites.ui.Exams.QuestionsFragment"
+        android:label="Exam"
+        tools:layout="@layout/fragment_questions">
+        <action
+            android:id="@+id/action_questionsFragment_to_nav_slideshow"
+            app:destination="@id/nav_slideshow" />
+    </fragment>
+    <fragment
+        android:id="@+id/lessonInformation"
+        android:name="com.murad.project1.activites.student_activites.LessonInformation"
+        android:label="Session information"
+        tools:layout="@layout/fragment_lesson_information">
+        <action
+            android:id="@+id/action_lessonInformation_to_nav_profile"
+            app:destination="@id/nav_profile" />
+    </fragment>
+    <fragment
+        android:id="@+id/bookFragment"
+        android:name="com.murad.project1.activites.student_activites.ui.StudyFragment.BookFragment"
+        android:label="Book"
+        tools:layout="@layout/fragment_book" />
+    <fragment
+        android:id="@+id/signFragment"
+        android:name="com.murad.project1.activites.student_activites.ui.StudyFragment.SignFragment"
+        android:label="Signs Catalog"
+        tools:layout="@layout/fragment_sign" >
+        <action
+            android:id="@+id/action_signFragment_to_insideSignFragment"
+            app:destination="@id/insideSignFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/insideSignFragment"
+        android:name="com.murad.project1.activites.student_activites.ui.StudyFragment.InsideSignFragment"
+        android:label="All signs"
+        tools:layout="@layout/fragment_inside_sign" />
+    <fragment
+        android:id="@+id/studentMessages"
+        android:name="com.murad.project1.activites.student_activites.studentMessages"
+        android:label="Messages"
+        tools:layout="@layout/fragment_student_messages" />
+</navigation>

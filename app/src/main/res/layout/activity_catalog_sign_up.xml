@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:orientation="vertical"
+    tools:context=".activites.catalog_signUp">
+
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="@string/registS"
+        android:textColor="#ba4c00"
+        android:textSize="@dimen/loginBtnTextSize"
+        android:textStyle="bold" />
+
+    <com.skyfishjy.library.RippleBackground
+        android:id="@+id/ripple"
+        android:layout_width="@dimen/catalogLay"
+        android:layout_height="@dimen/catalogLay"
+        android:layout_gravity="center"
+        app:rb_color="#ffac42"
+        app:rb_duration="1500"
+        app:rb_radius="32dp"
+        app:rb_rippleAmount="4"
+        app:rb_scale="8">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_margin="30dp"
+
+            android:background="@drawable/catalog_shape"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/studentCv"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+
+                android:layout_gravity="center"
+                android:layout_marginTop="40dp"
+                android:layout_weight="1"
+                app:cardBackgroundColor="@color/myGrey"
+                app:cardCornerRadius="75dp">
+
+
+                <ImageView
+                    android:id="@+id/imageView5"
+                    android:layout_width="@dimen/imageH"
+                    android:layout_height="@dimen/imageH"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/student" />
+
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/studStr"
+
+                android:textColor="@android:color/background_light"
+
+                android:textSize="@dimen/loginBtnTextSize"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </com.skyfishjy.library.RippleBackground>
+
+    <com.skyfishjy.library.RippleBackground
+        android:id="@+id/ripple2"
+        android:layout_width="@dimen/catalogLay"
+        android:layout_height="@dimen/catalogLay"
+        android:layout_gravity="center"
+        app:rb_color="#ffac42"
+        app:rb_duration="1500"
+        app:rb_radius="32dp"
+        app:rb_rippleAmount="4"
+        app:rb_scale="7">
+
+        <LinearLayout
+            android:layout_width="@dimen/catalogLay"
+            android:layout_height="@dimen/catalogLay"
+            android:layout_gravity="center"
+            android:layout_margin="30dp"
+            android:background="@drawable/catalog_shape2"
+            android:orientation="vertical">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/teacherCv"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="40dp"
+                android:layout_weight="1"
+                app:cardBackgroundColor="@color/myGrey"
+                app:cardCornerRadius="75dp">
+
+
+                <ImageView
+                    android:id="@+id/imageView6"
+                    android:layout_width="@dimen/imageH"
+                    android:layout_height="@dimen/imageH"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/teacher" />
+
+
+            </androidx.cardview.widget.CardView>
+
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/teachSTr"
+                android:textColor="@android:color/background_light"
+                android:textSize="@dimen/loginBtnTextSize"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </com.skyfishjy.library.RippleBackground>
+</LinearLayout>
