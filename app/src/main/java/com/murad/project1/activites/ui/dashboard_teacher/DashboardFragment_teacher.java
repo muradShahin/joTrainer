@@ -3,8 +3,11 @@ package com.murad.project1.activites.ui.dashboard_teacher;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,20 +42,29 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.murad.project1.R;
 import com.murad.project1.RecyclersView.RecyclerStudentLessons;
 import com.murad.project1.RecyclersView.RecyclerTeacherLessons;
 import com.murad.project1.activites.studentApplicationActivity;
 import com.murad.project1.lessonsClasses.Lessons;
 import com.murad.project1.supportClasses.Config;
+import com.murad.project1.supportClasses.CurrentLocationNew;
 import com.murad.project1.supportClasses.Current_Teacher;
 import com.murad.project1.supportClasses.Currrent_Student;
 import com.murad.project1.supportClasses.Flags;
+import com.murad.project1.supportClasses.LocationService;
 
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -89,6 +101,10 @@ public class DashboardFragment_teacher extends Fragment {
     ArrayList<Lessons> lessonsArrayList=new ArrayList<>();
 
 
+    //firebase
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
+
 
 
 
@@ -118,8 +134,21 @@ public class DashboardFragment_teacher extends Fragment {
         recyclerView=root.findViewById(R.id.rec);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
 
+        //firebase init
+        firebaseDatabase=FirebaseDatabase.getInstance();
+        databaseReference=firebaseDatabase.getReference("Locations").child(Current_Teacher.lname+Current_Teacher.fname+Current_Teacher.phone);
 
         lessonsArrayList.clear();
+
+        // starting a service to keep the location updated even if the driver closes the app
+
+       /* Intent intent=new Intent(requireActivity(), LocationService.class);
+        requireActivity().startService(intent);*/
+       getUpdatedDriverLocation();
+
+
+
+
 
 
         //init DATA
@@ -1269,6 +1298,60 @@ public class DashboardFragment_teacher extends Fragment {
         queue.add(req);
 
 
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+       /* Intent intent=new Intent(requireActivity(), LocationService.class);
+        requireActivity().startService(intent);*/
+        //Toast.makeText(requireActivity(),"test",Toast.LENGTH_LONG).show();
+    }
+
+    public void getUpdatedDriverLocation(){
+        CurrentLocationNew current=new CurrentLocationNew.Builder(requireActivity())
+                .setIntervalv2(5000)
+                .setFastestInterval(20000)
+                .setListener(new CurrentLocationNew.EasyLocationCallback() {
+                    @Override
+                    public void onGoogleAPIClient(@Nullable GoogleApiClient googleApiClient, @Nullable String message) {
+
+                    }
+
+                    @Override
+                    public void onLocationUpdated(double latitude, double longitude) throws IOException {
+                        Log.i("..", "onLocationUpdated::" +latitude +" : "+longitude);
+
+                        Map<String,Object> hasMap=new HashMap<>();
+                        hasMap.put("lat",latitude+"");
+                        hasMap.put("lng",longitude+"");
+
+                        // update on firebase
+
+                        databaseReference.updateChildren(hasMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.i("testUpdate","success");
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.i("testUpdate","faild");
+
+                            }
+                        });
+
+
+                    }
+
+                    @Override
+                    public void onLocationUpdateRemoved() {
+
+                    }
+                }).build();
+
+        getLifecycle().addObserver(current);
 
     }
 }

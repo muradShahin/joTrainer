@@ -1,7 +1,10 @@
 package com.murad.project1.activites.student_activites.ui.home;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,7 +15,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.FontRes;
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
@@ -34,13 +39,19 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.bumptech.glide.Glide;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.JsonObject;
 import com.murad.project1.R;
 import com.murad.project1.RecyclersView.RecyclerAllTeachers;
 import com.murad.project1.RecyclersView.RecyclerStudentMessages;
 import com.murad.project1.UsersClasses.Teacher;
 
+import com.murad.project1.activites.student_activites.ui.Tracking;
 import com.murad.project1.contractClasses.Messages;
+import com.murad.project1.lessonsClasses.Lessons;
 import com.murad.project1.supportClasses.Config;
+import com.murad.project1.supportClasses.Current_Teacher;
 import com.murad.project1.supportClasses.Currrent_Student;
 import com.murad.project1.supportClasses.FilterClass;
 
@@ -48,8 +59,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import ir.mirrajabi.searchdialog.SimpleSearchDialogCompat;
@@ -71,6 +85,12 @@ public class HomeFragment extends Fragment {
     private RelativeLayout notificationLayout;
     private TextView n_notifications;
 
+    // current lesson layout
+    private ImageView driverImage,trackingBtn;
+    private TextView driverName,date;
+    private ConstraintLayout currentLesson;
+    private LatLng teacherLocation;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         homeViewModel =
@@ -88,8 +108,17 @@ public class HomeFragment extends Fragment {
 
         notificationLayout.setVisibility(View.GONE);
 
-getAllStudentMessages();
+        //current lesson init
+        trackingBtn=root.findViewById(R.id.trackingImage);
+        driverName=root.findViewById(R.id.driverName);
+        date=root.findViewById(R.id.sessionDate);
+        driverImage=root.findViewById(R.id.trainerImage);
+        currentLesson=root.findViewById(R.id.constraintLayout);
+        currentLesson.setVisibility(View.GONE);
+
+        getAllStudentMessages();
         getAllTeachers();
+        getLiveLesson();
 
         //handling on search bar menu click
         mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
@@ -107,6 +136,17 @@ getAllStudentMessages();
         });
        //end of code
 
+
+        // on current lesson click
+        currentLesson.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent i=new Intent(getActivity(), Tracking.class);
+                i.putExtra("teacherLocation",teacherLocation);
+                startActivity(i);
+            }
+        });
 
 
 
@@ -628,6 +668,233 @@ getAllStudentMessages();
 
 
 
+
+
+    }
+
+    private void getLiveLesson(){
+
+
+
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        String url =   Config.url + "getStudentCurrentLesson.php";
+
+
+
+
+
+        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+                // Toast.makeText(getActivity(),s,Toast.LENGTH_LONG).show();
+
+                try {
+                    JSONObject o=new JSONObject(s);
+                    JSONArray arr=o.getJSONArray("result");
+
+
+                    Log.i("test1",arr.toString());
+
+                        JSONObject jsonObject=arr.getJSONObject(0);
+                        Lessons lesson=new Lessons();
+                        lesson.setDate(jsonObject.getString("session_date"));
+                        lesson.setStudent_email(jsonObject.getString("student_email"));
+                        lesson.setTeacher_email(jsonObject.getString("teacher_email"));
+                        lesson.setStatus(jsonObject.getString("status"));
+
+                        getDriverAllInfo(lesson);
+
+
+
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+                String errorDescription = "";
+                if( volleyError instanceof NetworkError) {
+                    errorDescription="Network Error";
+                } else if( volleyError instanceof ServerError) {
+                    errorDescription="Server Error";
+                } else if( volleyError instanceof AuthFailureError) {
+                    errorDescription="AuthFailureError";
+                } else if( volleyError instanceof ParseError) {
+                    errorDescription="Parse Error";
+                } else if( volleyError instanceof NoConnectionError) {
+                    errorDescription="No Conenction";
+                } else if( volleyError instanceof TimeoutError) {
+                    errorDescription="Time Out";
+                }else
+                {
+                    errorDescription="Connection Error";
+                }
+                Toast.makeText(getActivity(), errorDescription,Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> param = new HashMap<String,String>();
+                String currentDate = new SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault()).format(new Date());
+                param.put("email", Currrent_Student.email);
+                param.put("date",currentDate);
+
+
+
+                return param;
+            }
+        };
+        req.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(req);
+
+
+
+
+
+
+
+
+    }
+
+    private void getDriverAllInfo(Lessons lesson) {
+
+
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        String url =   Config.url + "getUserData.php";
+
+
+
+
+
+        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+                // Toast.makeText(getActivity(),s,Toast.LENGTH_LONG).show();
+
+                try {
+                    JSONObject o=new JSONObject(s);
+                    JSONArray arr=o.getJSONArray("result");
+
+                    Log.i("test2",arr.toString());
+
+
+
+
+                    JSONObject jsonObject=arr.getJSONObject(0);
+                    Teacher teacher=new Teacher();
+                    teacher.setCarImg(jsonObject.getString("carImg"));
+                    teacher.setCarType(jsonObject.getString("carType"));
+                    teacher.setFname(jsonObject.getString("fname"));
+                    teacher.setLname(jsonObject.getString("lname"));
+                    teacher.setPhone(jsonObject.getString("phone"));
+                    teacher.setAge(jsonObject.getString("age"));
+                    teacher.setExp(jsonObject.getString("exp"));
+                    teacher.setProfileImg(jsonObject.getString("profileImg"));
+                    teacher.setRate(jsonObject.getString("rate"));
+                    teacher.setEmail(jsonObject.getString("email"));
+                    teacher.setLat(jsonObject.getString("lat"));
+                    teacher.setLng(jsonObject.getString("lng"));
+
+                    Current_Teacher.phone=teacher.getPhone();
+                    Current_Teacher.fname=teacher.getFname();
+                    Current_Teacher.lname=teacher.getLname();
+                    Current_Teacher.email=teacher.getEmail();
+                    Current_Teacher.exp=teacher.getExp();
+                    Current_Teacher.age=teacher.getAge();
+                    Current_Teacher.profileImg=teacher.getProfileImg();
+                    Current_Teacher.rate=teacher.getRate();
+                    Current_Teacher.carImg=teacher.getCarImg();
+                    Current_Teacher.carType=teacher.getCarType();
+
+
+
+                    setCurrentLessonLayot(lesson,teacher);
+
+
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+
+                String errorDescription = "";
+                if( volleyError instanceof NetworkError) {
+                    errorDescription="Network Error";
+                } else if( volleyError instanceof ServerError) {
+                    errorDescription="Server Error";
+                } else if( volleyError instanceof AuthFailureError) {
+                    errorDescription="AuthFailureError";
+                } else if( volleyError instanceof ParseError) {
+                    errorDescription="Parse Error";
+                } else if( volleyError instanceof NoConnectionError) {
+                    errorDescription="No Conenction";
+                } else if( volleyError instanceof TimeoutError) {
+                    errorDescription="Time Out";
+                }else
+                {
+                    errorDescription="Connection Error";
+                }
+                Toast.makeText(getActivity(), errorDescription,Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> param = new HashMap<String,String>();
+                param.put("email",lesson.getTeacher_email());
+
+
+
+                return param;
+            }
+        };
+        req.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(req);
+
+
+    }
+
+    private void setCurrentLessonLayot(Lessons lesson, Teacher teacher) {
+
+        double lat=Double.parseDouble(teacher.getLat());
+        double lng=Double.parseDouble(teacher.getLng());
+
+        teacherLocation=new LatLng(lat,lng);
+
+
+        currentLesson.setVisibility(View.VISIBLE);
+        driverName.setText(teacher.getFname() +" "+teacher.getLname());
+        date.setText(lesson.getDate());
+        Glide.with(this)
+                .load(teacher.getProfileImg())
+                .into(driverImage);
 
 
     }

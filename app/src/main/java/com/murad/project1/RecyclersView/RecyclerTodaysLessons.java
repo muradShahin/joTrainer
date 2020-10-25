@@ -113,6 +113,8 @@ public class  RecyclerTodaysLessons extends    RecyclerView.Adapter<RecyclerToda
         holder.startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
                 ArrayList<Lessons>currentLessonInfo=new ArrayList<>();
                 Lessons lessons=new Lessons();
                      lessons.setSession_id(items.get(position).getSession_id());
@@ -160,6 +162,8 @@ public class  RecyclerTodaysLessons extends    RecyclerView.Adapter<RecyclerToda
                     String data=o.getString("result");
                     if(data.equals("1")) {
 
+                        // this code to save the last lesson we started in the Mobile database
+                        // when the lesson is finished , it will be removed
                         Paper.init(context);
                         Paper.book().write("currentLesson", currentLessonInfo);
                         Toast.makeText(context, "Lesson in ready mode now", Toast.LENGTH_SHORT).show();

@@ -14,8 +14,9 @@
         android:supportsRtl="false"
         android:theme="@style/AppTheme"
         tools:replace="android:supportsRtl">
-        <activity android:name=".activites.restPassword"></activity>
-        <activity android:name=".activites.Splash"></activity>
+        <activity android:name=".activites.student_activites.ui.Tracking"></activity>
+        <activity android:name=".activites.restPassword" />
+        <activity android:name=".activites.Splash" />
         <activity
             android:name=".activites.student_activites.studentGate"
             android:label="@string/title_activity_student_gate"
@@ -35,10 +36,18 @@
         <activity android:name=".activites.catalog_signUp" />
         <activity android:name=".activites.register" />
         <activity android:name=".activites.LoginActivity" />
+        <service android:name=".supportClasses.LocationService"
+                  android:enabled="true"
+            android:exported="true"
+            android:stopWithTask="false"
+            />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDkZqbA2FsOuDnide4rjdSN9kSTKHFnq3Y" />
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

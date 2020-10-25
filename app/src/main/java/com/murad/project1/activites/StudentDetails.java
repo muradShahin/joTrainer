@@ -7,16 +7,21 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,6 +74,7 @@ public class StudentDetails extends AppCompatActivity implements OnMapReadyCallb
     ProgressDialog pd;
     private ImageView Star1,Star2,Star3,Star4,Star5;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +94,8 @@ public class StudentDetails extends AppCompatActivity implements OnMapReadyCallb
         Star3=findViewById(R.id.star3);
         Star4=findViewById(R.id.star4);
         Star5=findViewById(R.id.star5);
+
+
 
         initComponents();
 
@@ -144,7 +152,7 @@ public class StudentDetails extends AppCompatActivity implements OnMapReadyCallb
             @Override
             public void onClick(View v) {
                 final EditText editText = new EditText(StudentDetails.this);
-                new SweetAlertDialog(StudentDetails.this, SweetAlertDialog.NORMAL_TYPE)
+        /*        new SweetAlertDialog(StudentDetails.this, SweetAlertDialog.NORMAL_TYPE)
                         .setTitleText("write your message")
                         .setConfirmText("send")
                         .setCustomView(editText)
@@ -162,7 +170,9 @@ public class StudentDetails extends AppCompatActivity implements OnMapReadyCallb
                                 sDialog.dismissWithAnimation();
                             }
                         })
-                        .show();
+                        .show();*/
+
+              senMessageChooser();
 
             }
         });
@@ -692,6 +702,63 @@ public class StudentDetails extends AppCompatActivity implements OnMapReadyCallb
 
 
         }
+
+    }
+
+    private void senMessageChooser(){
+
+        Dialog dialog=new Dialog(this);
+        dialog.setContentView(R.layout.message_chooser);
+        LinearLayout sendMessageWithApp=(LinearLayout)dialog.findViewById(R.id.linearLayout5);
+        LinearLayout sendMessageWhats=(LinearLayout) dialog.findViewById(R.id.linearLayout4);
+
+        sendMessageWhats.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                Uri uri = Uri.parse("smsto:" + currentStudentDetails.phone);
+                Intent i = new Intent(Intent.ACTION_SENDTO, uri);
+                i.setPackage("com.whatsapp");
+                startActivity(Intent.createChooser(i, ""));
+
+
+            }
+        });
+
+
+        sendMessageWithApp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                final EditText editText = new EditText(StudentDetails.this);
+                new SweetAlertDialog(StudentDetails.this, SweetAlertDialog.NORMAL_TYPE)
+                        .setTitleText("write your message")
+                        .setConfirmText("send")
+                        .setCustomView(editText)
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+
+                                sendMessageToStudent(editText.getText().toString());
+                                sDialog.dismissWithAnimation();
+                            }
+                        })
+                        .setCancelButton("Cancel", new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                sDialog.dismissWithAnimation();
+                            }
+                        })
+                        .show();
+
+
+            }
+        });
+
+      //  dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.show();
+
 
     }
 

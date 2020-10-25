@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -192,6 +193,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(String s) {
 
                 // Toast.makeText(getApplicationContext(),s,Toast.LENGTH_LONG).show();
+                Log.i("testLogin",s);
 
 
 

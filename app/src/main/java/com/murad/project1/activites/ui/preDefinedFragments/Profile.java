@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +39,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.murad.project1.R;
 import com.murad.project1.RecyclersView.RecyclerAppointmentsMessage;
 import com.murad.project1.RecyclersView.RecyclerCancellationRequests;
@@ -49,6 +58,7 @@ import com.murad.project1.activites.LoginActivity;
 
 import com.murad.project1.lessonsClasses.Lessons;
 import com.murad.project1.supportClasses.Config;
+import com.murad.project1.supportClasses.DriverClass;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,6 +87,9 @@ public class Profile extends Fragment {
     int numberOfNotification=0;
     RelativeLayout notificationLayout;
     SweetAlertDialog pd;
+
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference databaseReference;
 
 
     public Profile() {
@@ -108,6 +121,12 @@ public class Profile extends Fragment {
         notificationLayout=v.findViewById(R.id.notfiLayout);
         notifications=v.findViewById(R.id.notif);
         notificationLayout.setVisibility(View.GONE);
+
+        //init firebase
+        firebaseDatabase=FirebaseDatabase.getInstance();
+        databaseReference=firebaseDatabase.getReference("Locations");
+
+        addUserLocationTofireBase();
 
 
         pd = new SweetAlertDialog(getActivity(), SweetAlertDialog.PROGRESS_TYPE);
@@ -233,6 +252,59 @@ public class Profile extends Fragment {
 
        return v;
     }
+
+    private void addUserLocationTofireBase() {
+        DriverClass driverClass=new DriverClass();
+
+        if(Current_Teacher.email !=null)
+           driverClass.setEmail(Current_Teacher.email);
+
+
+        if(Current_Teacher.lat !=null)
+            driverClass.setLat(Current_Teacher.lat);
+        else
+            driverClass.setLat("31.9564013");
+
+        if(Current_Teacher.lng!=null)
+            driverClass.setLat(Current_Teacher.lng);
+        else
+            driverClass.setLng("35.8453127");
+
+   databaseReference.child("email");
+   databaseReference.orderByChild("email").equalTo(Current_Teacher.email);
+   databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+       @Override
+       public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+           if(dataSnapshot.exists())
+               Log.i("existsTest","exist");
+           else{
+               databaseReference.child(Current_Teacher.lname+Current_Teacher.fname+Current_Teacher.phone).setValue(driverClass)
+                       .addOnSuccessListener(new OnSuccessListener<Void>() {
+                           @Override
+                           public void onSuccess(Void aVoid) {
+                               Log.i("testFirebase","done successfully");
+                           }
+                       }).addOnFailureListener(new OnFailureListener() {
+                   @Override
+                   public void onFailure(@NonNull Exception e) {
+                       Log.i("testFirebase","fail");
+
+                   }
+               });
+           }
+
+       }
+
+       @Override
+       public void onCancelled(@NonNull DatabaseError databaseError) {
+
+       }
+   });
+
+
+
+    }
+
     public void initData(){
         Glide.with(this).load(Current_Teacher.profileImg).into(profileImage);
         name.setText(Current_Teacher.fname+ Current_Teacher.lname);

@@ -129,7 +129,7 @@
                 android:layout_marginTop="4dp"
                 android:fontFamily="sans-serif"
                 android:gravity="center"
-                android:text="Sanskar Tiwari"
+                android:text="murad shahin"
                 android:textColor="#424242"
                 android:textSize="@dimen/loginBtnTextSize"
                 android:textStyle="bold" />

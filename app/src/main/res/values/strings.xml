@@ -113,4 +113,7 @@
     <string name="cancleStrReq">Canceling Requests</string>
     <string name="strForgetPass">Reset password</string>
     <string name="restBtn">Reset my password</string>
+    <string name="send_message_chooser1">Send with Whatsapp</string>
+    <string name="send_message_chooser2">Within JoTrainer</string>
+    <string name="track_str">Track Trainer</string>
 </resources>

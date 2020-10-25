@@ -141,6 +141,7 @@ public class Student_profile extends Fragment {
 
 
 
+
         //controlling the nav (My details,My schedule)
         ScheduleLay.setVisibility(View.GONE);
 
