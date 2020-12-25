@@ -107,6 +107,7 @@ public class DashboardFragment_teacher extends Fragment {
     private TextView searchByDate;
     private  SweetAlertDialog pd;
     private Dialog dialog;
+    private TextView noSessionText;
 
     private DashboardFragment_teacher instance;
 
@@ -135,6 +136,7 @@ public class DashboardFragment_teacher extends Fragment {
         scheduleSection=root.findViewById(R.id.scheduleSection);
         studentImg=root.findViewById(R.id.studentImage);
         studentName=root.findViewById(R.id.name);
+        noSessionText=root.findViewById(R.id.noSessionText);
         controlling=root.findViewById(R.id.controlingPerc);
         shifting=root.findViewById(R.id.shifting);
         priorities=root.findViewById(R.id.priorities);
@@ -214,6 +216,7 @@ public class DashboardFragment_teacher extends Fragment {
 
 
             currentLessonLayout.setVisibility(View.GONE);
+            noSessionText.setVisibility(View.VISIBLE);
 
 
             archive.setTextColor(getResources().getColor(R.color.quantum_white_100));
@@ -243,6 +246,7 @@ public class DashboardFragment_teacher extends Fragment {
 
 
             schedule.setVisibility(View.GONE);
+            noSessionText.setVisibility(View.VISIBLE);
 
 
             upComing.setTextColor(getResources().getColor(R.color.quantum_white_100));
@@ -265,10 +269,10 @@ public class DashboardFragment_teacher extends Fragment {
 
 
                 currentLessonLayout.setVisibility(View.VISIBLE);
+                noSessionText.setVisibility(View.VISIBLE);
                 schedule.setVisibility(View.GONE);
 
-
-
+                init();
 
             }
         });
@@ -322,7 +326,9 @@ public class DashboardFragment_teacher extends Fragment {
                 scheduleSection.setTextColor(getResources().getColor(R.color.quantum_white_100));
 
                 currentLessonLayout.setVisibility(View.GONE);
+                noSessionText.setVisibility(View.GONE);
                 schedule.setVisibility(View.VISIBLE);
+
 
 
             }
@@ -431,6 +437,10 @@ public class DashboardFragment_teacher extends Fragment {
                 studentEmail = lessonInformation.get(0).getStudent_email();
                 previousRates+=Integer.parseInt(lessonInformation.get(0).getRate());
                 getStudentLessonInfo(studentEmail);
+
+            }else {
+                currentLessonLayout.setVisibility(View.GONE);
+                noSessionText.setVisibility(View.VISIBLE);
 
             }
     }

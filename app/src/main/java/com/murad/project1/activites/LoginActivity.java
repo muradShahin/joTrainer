@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -102,15 +103,19 @@ public class LoginActivity extends AppCompatActivity {
         pd.setTitleText("Loading");
         pd.setCancelable(false);
 
+
+
         getDeviceLocation();
         //checking if the gps is enable or not(for getting the current location)
         checkGps();
         //getting values from register activity
         if(Flags.Sent_from_register) {
-            mailFromIntent = getIntent().getExtras().getString("email");
-            passFromIntent = getIntent().getExtras().getString("password");
-            email.setText(mailFromIntent);
-            password.setText(passFromIntent);
+            if(getIntent().getExtras() != null) {
+                mailFromIntent = getIntent().getExtras().getString("email");
+                passFromIntent = getIntent().getExtras().getString("password");
+                email.setText(mailFromIntent);
+                password.setText(passFromIntent);
+            }
         }
 
        //handling login button on click
@@ -134,9 +139,8 @@ public class LoginActivity extends AppCompatActivity {
                             @Override
                             public void onFailure(@NonNull Exception e) {
 
-
                                 pd.dismissWithAnimation();
-                               Toast.makeText(LoginActivity.this,"incorrect email or password", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(LoginActivity.this,"incorrect email or password", Toast.LENGTH_SHORT).show();
                                 email.setError("not valid");
                                 password.setError("not valid");
 
@@ -184,6 +188,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void checkRole() {
+
         // if you are using php
         RequestQueue queue = Volley.newRequestQueue(this);
         String url =   Config.url + "checkRole.php";

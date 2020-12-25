@@ -160,19 +160,26 @@ public class register extends AppCompatActivity {
                 if(checkName()) {
                     if (checkEmail())
                         if(checkPhone())
-                                if(role.equals("teacher")) {
-                                    if (checkCar())
-                                        if(checkOffice())
-                                        createUser();
-                                        else
-                                            office.setError("required");
-                                    else
-                                        carType.setError("required");
 
-                                }else{
-                                    createUser();
+                                if (role.equals("teacher")) {
+                                             if (checkCar())
+                                                 if (checkOffice())
+                                                     if(imgUriCar !=null && imgUriProfile !=null) {
+                                                         createUser();
+                                                     }
+                                                     else{
+                                                         Toast.makeText(register.this,"please make sure you have selected photos for your car and yourself",Toast.LENGTH_SHORT).show();
+                                                     }
+                                                 else
+                                                     office.setError("required");
+                                             else
+                                                 carType.setError("required");
 
-                                }
+                                         } else {
+                                             createUser();
+                                         }
+
+
 
                         else
                             phone.setError("invalid number");
@@ -207,7 +214,8 @@ public class register extends AppCompatActivity {
               DatePickerFragmentDialog.newInstance(new DatePickerFragmentDialog.OnDateSetListener() {
                   @Override
                   public void onDateSet(DatePickerFragmentDialog view, int year, int monthOfYear, int dayOfMonth) {
-                    birthOfDate=year+" "+monthOfYear+" "+dayOfMonth;
+                    birthOfDate=year+" "+(monthOfYear+1)+" "+dayOfMonth;
+                    age.setText("birth of date : "+birthOfDate);
                     Toast.makeText(register.this,birthOfDate,Toast.LENGTH_LONG).show();
                   }
               }).show(getSupportFragmentManager(),"tag");
@@ -238,6 +246,7 @@ public class register extends AppCompatActivity {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                pd.dismissWithAnimation();
                 Toast.makeText(register.this, e.getMessage(), Toast.LENGTH_SHORT).show();
 
             }

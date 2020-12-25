@@ -282,7 +282,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
-                                android:text="5"
+                                android:text="0"
                                 android:textColor="@color/myOrange"
                                 android:textStyle="bold" />
                         </LinearLayout>
@@ -307,7 +307,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
-                                android:text="5"
+                                android:text="0"
                                 android:textColor="@color/myOrange"
                                 android:textStyle="bold" />
                         </LinearLayout>
