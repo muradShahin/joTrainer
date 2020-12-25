@@ -109,29 +109,40 @@ public class  RecyclerTodaysLessons extends    RecyclerView.Adapter<RecyclerToda
         Glide.with(context).load(items.get(position).getProfileImg()).into(holder.studentImage);
         holder.name.setText(items.get(position).getFname()+" "+items.get(position).getLname());
         holder.date.setText(items.get(position).getDate());
-        
+
+
+        if(items.get(position).getApproved().equals("false")){
+            holder.startButton.setBackgroundResource(R.color.red_btn_bg_color);
+            holder.startButton.setText("Not Approved Yet");
+        }
+
+
+
         holder.startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
 
-                ArrayList<Lessons>currentLessonInfo=new ArrayList<>();
-                Lessons lessons=new Lessons();
-                     lessons.setSession_id(items.get(position).getSession_id());
-                     lessons.setDate(items.get(position).getDate());
-                     lessons.setLat(items.get(position).getLat());
-                     lessons.setLng(items.get(position).getLng());
-                     lessons.setAge(items.get(position).getAge());
-                     lessons.setStudent_email(items.get(position).getStudent_email());
-                     lessons.setFname(items.get(position).getFname());
-                     lessons.setLname(items.get(position).getLname());
-                     lessons.setPhone(items.get(position).getPhone());
-                     lessons.setTeacher_email(items.get(position).getTeacher_email());
-                     lessons.setCity(items.get(position).getCity());
-                     lessons.setProfileImg(items.get(position).getProfileImg());
-                     lessons.setRate(items.get(position).getRate());
-                     currentLessonInfo.add(lessons);
-                     checkIfReadyFound(items.get(position).getSession_id(), v,currentLessonInfo);
+                if(items.get(position).getApproved().equals("true")) {
+                    ArrayList<Lessons> currentLessonInfo = new ArrayList<>();
+                    Lessons lessons = new Lessons();
+                    lessons.setSession_id(items.get(position).getSession_id());
+                    lessons.setDate(items.get(position).getDate());
+                    lessons.setLat(items.get(position).getLat());
+                    lessons.setLng(items.get(position).getLng());
+                    lessons.setAge(items.get(position).getAge());
+                    lessons.setStudent_email(items.get(position).getStudent_email());
+                    lessons.setFname(items.get(position).getFname());
+                    lessons.setLname(items.get(position).getLname());
+                    lessons.setPhone(items.get(position).getPhone());
+                    lessons.setTeacher_email(items.get(position).getTeacher_email());
+                    lessons.setCity(items.get(position).getCity());
+                    lessons.setProfileImg(items.get(position).getProfileImg());
+                    lessons.setRate(items.get(position).getRate());
+                    currentLessonInfo.add(lessons);
+                    checkIfReadyFound(items.get(position).getSession_id(), v, currentLessonInfo);
+
+                }
 
 
             }

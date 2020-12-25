@@ -16,6 +16,7 @@ import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -67,7 +68,7 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 public class StudentDetails extends AppCompatActivity implements OnMapReadyCallback {
     private GoogleMap map;
     ImageView profileImage;
-    TextView studName,studCity,studAge;
+    TextView studName,studCity,studAge,numberOfLessons,numberOfLessonsLeft;
     Button call,message,accept,userApplication;
     String phoneNumber;
     private int REQUEST_CALL=1;
@@ -79,6 +80,7 @@ public class StudentDetails extends AppCompatActivity implements OnMapReadyCallb
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.student_details);
+
 
         getSupportActionBar().hide();
         profileImage=findViewById(R.id.image);
@@ -94,6 +96,8 @@ public class StudentDetails extends AppCompatActivity implements OnMapReadyCallb
         Star3=findViewById(R.id.star3);
         Star4=findViewById(R.id.star4);
         Star5=findViewById(R.id.star5);
+        numberOfLessons=findViewById(R.id.n_lessons);
+        numberOfLessonsLeft=findViewById(R.id.n_left);
 
 
 
@@ -299,6 +303,7 @@ public class StudentDetails extends AppCompatActivity implements OnMapReadyCallb
         studAge.setText(currentStudentDetails.age);
         phoneNumber=currentStudentDetails.phone;
         getRate();
+        getStudentNumberOfLessons();
 
     }
 
@@ -758,6 +763,89 @@ public class StudentDetails extends AppCompatActivity implements OnMapReadyCallb
 
       //  dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         dialog.show();
+
+
+    }
+
+    private void getStudentNumberOfLessons(){
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url =   Config.url + "getStudentLessonNumber.php";
+
+
+        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+                //Toast.makeText(getApplicationContext(),s,Toast.LENGTH_LONG).show();
+
+                try {
+                    JSONObject o=new JSONObject(s);
+                    JSONArray arr=o.getJSONArray("result");
+
+                    for(int i=0;i<arr.length();i++) {
+                        JSONObject x = arr.getJSONObject(i);
+
+                        int n_lessons=x.getInt("n_lessons");
+                        int n_lessonsLeft=x.getInt("n_lessonsLeft");
+
+                        numberOfLessons.setText("Number of Lessons : " + n_lessons);
+                        numberOfLessonsLeft.setText("Number of Lessons left : " + n_lessonsLeft);
+
+                        Log.i("testLessons",n_lessons +" :: "+n_lessonsLeft);
+
+
+
+                    }
+
+
+                } catch (JSONException e) {
+
+                    e.printStackTrace();
+                }
+
+
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                pd.dismiss();
+                String errorDescription = "";
+                if( volleyError instanceof NetworkError) {
+                    errorDescription="Network Error";
+                } else if( volleyError instanceof ServerError) {
+                    errorDescription="Server Error";
+                } else if( volleyError instanceof AuthFailureError) {
+                    errorDescription="AuthFailureError";
+                } else if( volleyError instanceof ParseError) {
+                    errorDescription="Parse Error";
+                } else if( volleyError instanceof NoConnectionError) {
+                    errorDescription="No Conenction";
+                } else if( volleyError instanceof TimeoutError) {
+                    errorDescription="Time Out";
+                }else
+                {
+                    errorDescription="Connection Error";
+                }
+                Toast.makeText(StudentDetails.this, errorDescription,Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> param = new HashMap<String,String>();
+                param.put("email", currentStudentDetails.studentEmail);
+
+
+                return param;
+            }
+        };
+        req.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(req);
 
 
     }

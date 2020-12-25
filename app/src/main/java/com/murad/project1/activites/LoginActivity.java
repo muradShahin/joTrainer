@@ -53,6 +53,7 @@ import com.murad.project1.activites.student_activites.studentGate;
 import com.murad.project1.supportClasses.Config;
 import com.murad.project1.supportClasses.Flags;
 import com.murad.project1.supportClasses.PerformanceModels;
+import com.murad.project1.supportClasses.Role;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,6 +78,8 @@ public class LoginActivity extends AppCompatActivity {
     String mailFromIntent,passFromIntent;
     SweetAlertDialog pd;
     private String locationUpdatPhpFile;
+
+    private boolean isApprovedTrainer=false;
 
 
     @Override
@@ -132,6 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                             public void onFailure(@NonNull Exception e) {
 
 
+                                pd.dismissWithAnimation();
                                Toast.makeText(LoginActivity.this,"incorrect email or password", Toast.LENGTH_SHORT).show();
                                 email.setError("not valid");
                                 password.setError("not valid");
@@ -202,17 +206,21 @@ public class LoginActivity extends AppCompatActivity {
                     JSONObject o=new JSONObject(s);
                     String data=o.getString("result");
                         if(data.equals("1")) {
+                            //Role.role="student";
                             locationUpdatPhpFile="updateStudentLocation.php";
                             insertCurrentLocationToDb("student");
+
 
 
                                 }
 
                             else{
-                                locationUpdatPhpFile="updateLocation.php";
+                           // Role.role="teacher";
+                            locationUpdatPhpFile="updateLocation.php";
                             insertCurrentLocationToDb("teacher");
 
-                              }
+
+                        }
 
                 }
                 catch (JSONException e) {
@@ -249,7 +257,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String,String> param = new HashMap<String,String>();
-                param.put("email",email.getText().toString());
+                param.put("email",firebaseAuth.getCurrentUser().getEmail());
 
 
 
@@ -315,6 +323,7 @@ public class LoginActivity extends AppCompatActivity {
                             Currrent_Student.rate=rate;
                             Currrent_Student.role="student";
                             roleOfUser="student";
+                            Role.role="student";
                             Flags.Go_as_Student = true;
                             Toast.makeText(LoginActivity.this, Currrent_Student.fname, Toast.LENGTH_SHORT).show();
 
@@ -360,7 +369,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String,String> param = new HashMap<String,String>();
-                param.put("email",email.getText().toString());
+                param.put("email",firebaseAuth.getCurrentUser().getEmail());
 
 
 
@@ -419,6 +428,12 @@ public class LoginActivity extends AppCompatActivity {
                         String carImg = x.getString("carImg");
                         String profileImg = x.getString("profileImg");
                         String rate = x.getString("rate");
+                        String isApproved=x.getString("isApproved");
+
+                        if(isApproved.equalsIgnoreCase("true"))
+                            isApprovedTrainer=true;
+                        else
+                            isApprovedTrainer=false;
 
 
                             Current_Teacher.id=id;
@@ -437,8 +452,9 @@ public class LoginActivity extends AppCompatActivity {
                             Current_Teacher.rate=rate;
                             Current_Teacher.role="teacher";
                             roleOfUser="teacher";
-                            Flags.Go_as_Teacher = true;
-                            Toast.makeText(LoginActivity.this, Current_Teacher.fname, Toast.LENGTH_SHORT).show();
+                            Role.role="teacher";
+
+                        Flags.Go_as_Teacher = true;
 
 
 
@@ -446,10 +462,13 @@ public class LoginActivity extends AppCompatActivity {
 
                     }
 
-
+                    if(isApprovedTrainer) {
                         Intent i = new Intent(LoginActivity.this, Index.class);
                         startActivity(i);
                         finish();
+                    }else{
+                        Toast.makeText(LoginActivity.this,"you are not approved as a trainer yet!",Toast.LENGTH_LONG).show();
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -485,7 +504,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String,String> param = new HashMap<String,String>();
-                param.put("email",email.getText().toString());
+                param.put("email",firebaseAuth.getCurrentUser().getEmail());
 
 
 
@@ -659,7 +678,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     param.put("lat",lat1+"");
                     param.put("lng",lat2+"");
-                    param.put("email",email.getText().toString());
+                    param.put("email",firebaseAuth.getCurrentUser().getEmail());
 
 
                 return param;
@@ -787,7 +806,19 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if(firebaseAuth.getCurrentUser() !=null){
+            pd = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+            pd.getProgressHelper().setBarColor(Color.parseColor("#f47b00"));
+            pd.setTitleText("Loading");
+            pd.setCancelable(false);
+            pd.show();
+            checkRole();
+        }
 
     }
+}
 
 

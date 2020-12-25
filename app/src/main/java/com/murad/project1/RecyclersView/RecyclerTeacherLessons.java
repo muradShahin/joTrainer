@@ -38,6 +38,7 @@ import com.murad.project1.supportClasses.Config;
 import com.murad.project1.supportClasses.CurrentLessInfo;
 import com.murad.project1.supportClasses.Currrent_Student;
 import com.murad.project1.supportClasses.PerformanceModels;
+import com.murad.project1.supportClasses.Role;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -77,7 +78,7 @@ public class  RecyclerTeacherLessons extends    RecyclerView.Adapter<RecyclerTea
 
         //Declare
         TextView date;
-        Button moreDetails;
+        Button moreDetails,declineBtn,acceptBtn;
 
 
 
@@ -87,7 +88,8 @@ public class  RecyclerTeacherLessons extends    RecyclerView.Adapter<RecyclerTea
             date=itemView.findViewById(R.id.date);
             moreDetails=itemView.findViewById(R.id.moreBtn);
 
-
+            declineBtn=itemView.findViewById(R.id.declineBtn);
+            acceptBtn=itemView.findViewById(R.id.button4);
 
         }
     }
@@ -121,6 +123,11 @@ public class  RecyclerTeacherLessons extends    RecyclerView.Adapter<RecyclerTea
         }
 
 
+        if(Role.role.equals("teacher")){
+            holder.declineBtn.setVisibility(View.GONE);
+            holder.acceptBtn.setVisibility(View.GONE);
+        }
+
         holder.moreDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -134,7 +141,14 @@ public class  RecyclerTeacherLessons extends    RecyclerView.Adapter<RecyclerTea
 
                     getArchiveLessonInfo(items.get(position).getSession_id(), v);
                 }else{
-                    showDate(items.get(position).getSession_id());
+
+                    if(items.get(position).getApproved().equals("true")){
+
+                        Toast.makeText(context,"You can't change the date when the lesson is approved by the trainee",Toast.LENGTH_LONG).show();
+
+                    }else {
+                        showDate(items.get(position).getSession_id());
+                    }
 
                 }
 

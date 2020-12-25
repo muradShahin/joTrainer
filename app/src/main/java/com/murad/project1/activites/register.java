@@ -11,12 +11,14 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -43,13 +45,16 @@ import com.google.firebase.storage.UploadTask;
 import com.murad.project1.R;
 import com.murad.project1.supportClasses.Config;
 import com.murad.project1.supportClasses.Flags;
+import com.shagi.materialdatepicker.date.DatePickerFragmentDialog;
 import com.travijuu.numberpicker.library.NumberPicker;
 
 import org.angmarch.views.NiceSpinner;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,11 +62,12 @@ import java.util.Map;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
+
 public class register extends AppCompatActivity {
     NiceSpinner niceSpinner;
     NumberPicker numberPicker;
     ImageView profileImg,carImg;
-    EditText firstN,lastN,password,mail,phone,age,carType,office;
+    EditText firstN,lastN,password,mail,phone,carType,office;
     Button createButton;
     SweetAlertDialog pd;
     private Uri imgUriProfile;
@@ -71,6 +77,8 @@ public class register extends AppCompatActivity {
     String downloadUriPro,downloadUriCar;
     private FirebaseAuth firebaseAuth;
     String role;
+    TextView age;
+    private String birthOfDate;
     LinearLayout linearLayoutTeacher;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,7 +160,6 @@ public class register extends AppCompatActivity {
                 if(checkName()) {
                     if (checkEmail())
                         if(checkPhone())
-                            if(checkAge())
                                 if(role.equals("teacher")) {
                                     if (checkCar())
                                         if(checkOffice())
@@ -166,8 +173,7 @@ public class register extends AppCompatActivity {
                                     createUser();
 
                                 }
-                            else
-                                age.setError("required:18 years or older");
+
                         else
                             phone.setError("invalid number");
 
@@ -189,8 +195,27 @@ public class register extends AppCompatActivity {
            linearLayoutTeacher.setVisibility(View.GONE);
         }
 
+       /* swipepicker.setOnValueChangeListener(object : SwipePicker.OnValueChangeListener {
+            override fun onValueChanged(view: SwipePicker, oldValue: Float, newValue: Float) {
+                // is called when the value is changed.
+            }
+        })*/
+
+      age.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View view) {
+              DatePickerFragmentDialog.newInstance(new DatePickerFragmentDialog.OnDateSetListener() {
+                  @Override
+                  public void onDateSet(DatePickerFragmentDialog view, int year, int monthOfYear, int dayOfMonth) {
+                    birthOfDate=year+" "+monthOfYear+" "+dayOfMonth;
+                    Toast.makeText(register.this,birthOfDate,Toast.LENGTH_LONG).show();
+                  }
+              }).show(getSupportFragmentManager(),"tag");
+          }
+      });
 
     }
+
 
     //this method is used to create an auth to the user in the firebase
     private void createUser() {
@@ -296,7 +321,7 @@ public class register extends AppCompatActivity {
                     param.put("password", password.getText().toString());
                     param.put("phone", phone.getText().toString());
                     param.put("city", niceSpinner.getSelectedItem().toString());
-                    param.put("age", age.getText().toString());
+                    param.put("age", birthOfDate);
                     param.put("role", role);
                     param.put("lat", "");
                     param.put("lng", "");
@@ -399,7 +424,7 @@ public class register extends AppCompatActivity {
                    param.put("password", password.getText().toString());
                    param.put("phone", phone.getText().toString());
                    param.put("city", niceSpinner.getSelectedItem().toString());
-                   param.put("age", age.getText().toString());
+                   param.put("age", birthOfDate);
                    param.put("exp", numberPicker.getValue() + "");
                    param.put("role", role);
                    param.put("carType", carType.getText().toString());

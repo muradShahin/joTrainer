@@ -39,6 +39,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -220,6 +221,7 @@ ProgressBar pd;
                 param.put("status","waiting");
                 param.put("studentId", String.valueOf(Currrent_Student.id));
                 param.put("teacherId", String.valueOf(Current_Teacher.id));
+                param.put("approved","false");
 
 
                 return param;
@@ -256,6 +258,7 @@ ProgressBar pd;
                     if(data.equals("1"))
                     {
                         Toast.makeText(studentApplicationActivity.this, "lesson have been submitted", Toast.LENGTH_SHORT).show();
+                        sendMessageToStudent("");
                         pd.setVisibility(View.GONE);
                     }
 
@@ -315,6 +318,8 @@ ProgressBar pd;
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(req);
     }
+
+
 
     private void updateLessonsNumber() {
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -434,4 +439,91 @@ ProgressBar pd;
                 .setSelectedColor(Color.parseColor("#ffffff")).show(getSupportFragmentManager(),"date");
 
     }
+
+    private void sendMessageToStudent(String post){
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url =   Config.url + "SendMessage.php";
+
+
+        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+                //Toast.makeText(getApplicationContext(),s,Toast.LENGTH_LONG).show();
+
+                try {
+                    JSONObject o=new JSONObject(s);
+                    String data=o.getString("result");
+                    if(data.equals("1"))
+                    {
+                        Toast.makeText(studentApplicationActivity.this, "Sent", Toast.LENGTH_SHORT).show();
+                    }
+
+                    else
+                    {
+                        Toast.makeText(studentApplicationActivity.this,"Failed",Toast.LENGTH_LONG).show();
+                    }
+
+
+                } catch (JSONException e) {
+
+                    e.printStackTrace();
+                }
+
+
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                String errorDescription = "";
+                if( volleyError instanceof NetworkError) {
+                    errorDescription="Network Error";
+                } else if( volleyError instanceof ServerError) {
+                    errorDescription="Server Error";
+                } else if( volleyError instanceof AuthFailureError) {
+                    errorDescription="AuthFailureError";
+                } else if( volleyError instanceof ParseError) {
+                    errorDescription="Parse Error";
+                } else if( volleyError instanceof NoConnectionError) {
+                    errorDescription="No Conenction";
+                } else if( volleyError instanceof TimeoutError) {
+                    errorDescription="Time Out";
+                }else
+                {
+                    errorDescription="Connection Error";
+                }
+                Toast.makeText(studentApplicationActivity.this, errorDescription,Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> param = new HashMap<String,String>();
+                String currentDate = new SimpleDateFormat(getString(R.string.dateFormat), Locale.getDefault()).format(new Date());
+                String instructorName=Current_Teacher.fname+" "+Current_Teacher.lname;
+                param.put("id", String.valueOf(Currrent_Student.id));
+                param.put("student_email", currentStudentDetails.studentEmail);
+                param.put("teacher_email",Current_Teacher.email);
+                param.put("date",currentDate);
+                param.put("lessonId","1999");
+                param.put("name",instructorName);
+                param.put("status","message");
+                param.put("img",Current_Teacher.profileImg);
+                param.put("post",instructorName +": has add a session on this date"+sessionDateWithTime);
+                param.put("teacherId", String.valueOf(Current_Teacher.id));
+
+                return param;
+            }
+        };
+        req.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(req);
+
+
+
+    }
+
 }

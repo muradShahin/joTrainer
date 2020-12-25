@@ -20,6 +20,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.murad.project1.R;
 import com.murad.project1.supportClasses.Currrent_Student;
 import com.murad.project1.activites.LoginActivity;
@@ -119,6 +120,8 @@ public class studentGate extends AppCompatActivity {
                                     @Override
                                     public void run() {
                                         pd.dismiss();
+                                        FirebaseAuth firebaseAuth=FirebaseAuth.getInstance();
+                                        firebaseAuth.signOut();
                                         Intent i=new Intent(studentGate.this, LoginActivity.class);
                                         startActivity(i);
                                         finish();

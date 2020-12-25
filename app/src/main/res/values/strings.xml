@@ -116,4 +116,9 @@
     <string name="send_message_chooser1">Send with Whatsapp</string>
     <string name="send_message_chooser2">Within JoTrainer</string>
     <string name="track_str">Track Trainer</string>
+    <string name="moreStrNew">More</string>
+    <string name="declineStrMessage">Are you sure about declining this session ?</string>
+    <string name="acceptMessage">Do you really accept this session ?</string>
+    <string name="finishNow">Finish Now</string>
+    <string name="dateOfBirthStr">Date Of Birth</string>
 </resources>

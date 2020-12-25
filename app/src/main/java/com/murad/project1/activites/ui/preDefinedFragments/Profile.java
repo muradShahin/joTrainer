@@ -41,6 +41,7 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -225,6 +226,8 @@ public class Profile extends Fragment {
                                     @Override
                                     public void run() {
                                         pd.dismiss();
+                                        FirebaseAuth firebaseAuth=FirebaseAuth.getInstance();
+                                        firebaseAuth.signOut();
                                         Intent i=new Intent(getActivity(), LoginActivity.class);
                                         startActivity(i);
                                         getActivity().finish();
@@ -315,6 +318,7 @@ public class Profile extends Fragment {
         address.setText(Current_Teacher.city);
         Glide.with(getActivity()).load(Current_Teacher.carImg).into(carImg);
         getParticipatingRequests();
+
 
     }
     public void getTeacherStudents(){
@@ -567,7 +571,8 @@ public class Profile extends Fragment {
                         String teacher_email = x.getString("teacher_email");
                         String date= x.getString("session_date");
                         String status= x.getString("status");
-                        getStudentData(student_email,date,id,teacher_email);
+                        String approved=x.getString("approved");
+                        getStudentData(student_email,date,id,teacher_email,status,approved);
 
 
 
@@ -627,7 +632,7 @@ public class Profile extends Fragment {
 
 
     }
-    public void getStudentData(String emailStudent,String date,String id,String teach_mail){
+    public void getStudentData(String emailStudent,String date,String id,String teach_mail,String status,String approved){
         long session_id=Long.parseLong(id);
 
         // if you are using php
@@ -678,6 +683,8 @@ public class Profile extends Fragment {
                         today_lessons.setDate(date);
                         today_lessons.setTeacher_email(teach_mail);
                         today_lessons.setRate(rate);
+                        today_lessons.setStatus(status);
+                        today_lessons.setApproved(approved);
 
 
                         Arraylessons.add(today_lessons);

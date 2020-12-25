@@ -41,13 +41,26 @@
                 android:textColor="@color/background"
                 android:textStyle="bold" />
 
+            <Button
+                android:id="@+id/finishNow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:background="@drawable/btn_login_shape"
+                android:text="@string/finishNow"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/rec"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <ProgressBar
                 android:id="@+id/progressBarQues"
@@ -62,8 +75,12 @@
             android:id="@+id/scoreLay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="4dp"
-            android:orientation="vertical">
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/finalCard"

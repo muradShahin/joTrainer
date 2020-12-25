@@ -3,6 +3,7 @@ package com.murad.project1.activites.student_activites.ui.Profile_student;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -633,6 +634,8 @@ public class Student_profile extends Fragment {
                         String date= x.getString("session_date");
                         String status= x.getString("status");
 
+
+
                         Lessons td=new Lessons();
                         td.setStatus(status);
                         td.setTodayLesson(false);
@@ -644,7 +647,7 @@ public class Student_profile extends Fragment {
 
 
                     }
-                    recyclerViewComing.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
+                    recyclerViewComing.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,true));
                     RecyclerStudentLessons recyclerStudentLessons=new RecyclerStudentLessons(getActivity(),arrayOfLessonsComing);
                     recyclerViewComing .setAdapter(recyclerStudentLessons);
 
@@ -851,7 +854,7 @@ public class Student_profile extends Fragment {
 
 
                     }
-                    recyclerViewArchive.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
+                    recyclerViewArchive.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,true));
                     RecyclerStudentLessons recyclerStudentLessons=new RecyclerStudentLessons(getActivity(),arrayOfLessonsComing);
                     recyclerViewArchive .setAdapter(recyclerStudentLessons);
 

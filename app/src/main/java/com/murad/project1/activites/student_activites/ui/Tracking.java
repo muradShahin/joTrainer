@@ -174,12 +174,13 @@ public class Tracking extends AppCompatActivity implements OnMapReadyCallback {
                       //  teacherLocation=new LatLng(lat,lng);
 
 
-                        LatLng location=new LatLng(lat,lng);
-                        map.clear();
-
-                        BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.car_marker);
-                        map.addMarker(new MarkerOptions().position(location).title("current location").icon(icon));
-                        map.animateCamera(CameraUpdateFactory.newLatLngZoom(location,14.0f));
+                        if(lat !=31.9558133 && lng!=35.9118567) {
+                            LatLng location = new LatLng(lat, lng);
+                            map.clear();
+                            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.car_marker);
+                            map.addMarker(new MarkerOptions().position(location).title("current location").icon(icon));
+                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 14.0f));
+                        }
 
                         break;
 

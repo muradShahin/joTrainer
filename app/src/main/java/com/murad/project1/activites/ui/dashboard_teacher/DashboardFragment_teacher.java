@@ -1,6 +1,7 @@
 package com.murad.project1.activites.ui.dashboard_teacher;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -45,11 +46,16 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.murad.project1.R;
+import com.murad.project1.RecyclersView.DatesAdapter;
 import com.murad.project1.RecyclersView.RecyclerStudentLessons;
 import com.murad.project1.RecyclersView.RecyclerTeacherLessons;
+import com.murad.project1.RecyclersView.RecyclerViewTeacherStudents;
+import com.murad.project1.RecyclersView.StudentsFilterAdapter;
+import com.murad.project1.UsersClasses.TeacherStudents;
 import com.murad.project1.activites.studentApplicationActivity;
 import com.murad.project1.lessonsClasses.Lessons;
 import com.murad.project1.supportClasses.Config;
@@ -73,6 +79,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import guy4444.smartrate.SmartRate;
 import io.paperdb.Paper;
 import ru.slybeaver.slycalendarview.SlyCalendarDialog;
@@ -98,7 +105,13 @@ public class DashboardFragment_teacher extends Fragment {
     private TextView upComing,archive;
     private RecyclerView recyclerView;
     private TextView searchByDate;
+    private  SweetAlertDialog pd;
+    private Dialog dialog;
+
+    private DashboardFragment_teacher instance;
+
     ArrayList<Lessons> lessonsArrayList=new ArrayList<>();
+    ArrayList<TeacherStudents> studentsArray=new ArrayList<>();
 
 
     //firebase
@@ -106,6 +119,8 @@ public class DashboardFragment_teacher extends Fragment {
     private DatabaseReference databaseReference;
 
 
+    //filter dialog
+     private ImageView filterBtn;
 
 
 
@@ -114,6 +129,8 @@ public class DashboardFragment_teacher extends Fragment {
         dashboardViewModelTeacher =
                 ViewModelProviders.of(this).get(DashboardViewModel_teacher.class);
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        instance=this;
+
         currentLesson=root.findViewById(R.id.currLess);
         scheduleSection=root.findViewById(R.id.scheduleSection);
         studentImg=root.findViewById(R.id.studentImage);
@@ -131,8 +148,9 @@ public class DashboardFragment_teacher extends Fragment {
         upComing=root.findViewById(R.id.futureLess);
         archive=root.findViewById(R.id.history);
         searchByDate=root.findViewById(R.id.searchTxt);
+        filterBtn=root.findViewById(R.id.filterBtn);
         recyclerView=root.findViewById(R.id.rec);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,false));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.VERTICAL,true));
 
         //firebase init
         firebaseDatabase=FirebaseDatabase.getInstance();
@@ -318,9 +336,55 @@ public class DashboardFragment_teacher extends Fragment {
             }
         });
 
+        //filter dialog
+
+        filterBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                 dialog=new Dialog(requireContext());
+                dialog.setContentView(R.layout.filter_dialog);
+
+                TabLayout tabs=dialog.findViewById(R.id.tabLayout);
+                RecyclerView filterRec=dialog.findViewById(R.id.rec_filter);
+                filterRec.setLayoutManager(new LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false));
+
+                getDates(filterRec);
+                tabs.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                    @Override
+                    public void onTabSelected(TabLayout.Tab tab) {
+
+                        if(tab.getPosition()==0){
+                            getDates(filterRec);
+                        }else if(tab.getPosition()==1){
+                            getTeacherStudents(filterRec);
+
+                        }
+                    }
+
+                    @Override
+                    public void onTabUnselected(TabLayout.Tab tab) {
+
+                    }
+
+                    @Override
+                    public void onTabReselected(TabLayout.Tab tab) {
+
+                    }
+                });
+
+                dialog.getWindow().setBackgroundDrawableResource(R.color.transparent);
+                dialog.show();
+
+
+            }
+        });
+
+
         return root;
 
     }
+
+
 
     private void showDate() {
         new SlyCalendarDialog()
@@ -908,13 +972,18 @@ public class DashboardFragment_teacher extends Fragment {
                         String teacher_email = x.getString("teacher_email");
                         String date= x.getString("session_date");
                         String status=x.getString("status");
+                        String approve=x.getString("approved");
 
+
+                        Log.i("testApprove",approve);
                         Lessons lesson=new Lessons();
                         lesson.setStudent_email(student_email);
                         lesson.setSession_id(id);
                         lesson.setTeacher_email(teacher_email);
                         lesson.setDate(date);
                         lesson.setStatus(status);
+                        lesson.setApproved(approve);
+
                         lessonsArrayList.add(lesson);
 
 
@@ -1321,26 +1390,28 @@ public class DashboardFragment_teacher extends Fragment {
 
                     @Override
                     public void onLocationUpdated(double latitude, double longitude) throws IOException {
-                        Log.i("..", "onLocationUpdated::" +latitude +" : "+longitude);
+                        Log.i("update", "onLocationUpdated::" + latitude + " : " + longitude);
 
-                        Map<String,Object> hasMap=new HashMap<>();
-                        hasMap.put("lat",latitude+"");
-                        hasMap.put("lng",longitude+"");
+                        Map<String, Object> hasMap = new HashMap<>();
+
+                        hasMap.put("lat", latitude + "");
+                        hasMap.put("lng", longitude + "");
 
                         // update on firebase
 
-                        databaseReference.updateChildren(hasMap).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.i("testUpdate","success");
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.i("testUpdate","faild");
 
-                            }
-                        });
+                                databaseReference.updateChildren(hasMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.i("testUpdate", "success");
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.i("testUpdate", "faild");
+
+                                    }
+                                });
 
 
                     }
@@ -1354,4 +1425,453 @@ public class DashboardFragment_teacher extends Fragment {
         getLifecycle().addObserver(current);
 
     }
+
+    private void getDates(RecyclerView recDates) {
+
+        pr.setVisibility(View.VISIBLE);
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        String url =   Config.url + "getDates.php";
+
+
+
+
+
+        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+                // Toast.makeText(getApplicationContext(),s,Toast.LENGTH_LONG).show();
+
+
+
+                ArrayList<String> dates=new ArrayList<>();
+
+                try {
+                    JSONObject o=new JSONObject(s);
+                    JSONArray arr=o.getJSONArray("result");
+
+
+                    for(int i=0;i<arr.length();i++) {
+                        JSONObject x = arr.getJSONObject(i);
+
+                        String date= x.getString("session_date");
+
+                        dates.add(date);
+
+                    }
+
+                    for (int i=0;i<dates.size();i++) {
+                        if (dates.get(i).contains("dumy")){
+                            dates.remove(i);
+                        }
+                    }
+                    DatesAdapter adapter=new DatesAdapter(instance,dates);
+                    recDates.setAdapter(adapter);
+
+
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                pr.setVisibility(View.GONE);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                pr.setVisibility(View.GONE);
+
+                String errorDescription = "";
+                if( volleyError instanceof NetworkError) {
+                    errorDescription="Network Error";
+                } else if( volleyError instanceof ServerError) {
+                    errorDescription="Server Error";
+                } else if( volleyError instanceof AuthFailureError) {
+                    errorDescription="AuthFailureError";
+                } else if( volleyError instanceof ParseError) {
+                    errorDescription="Parse Error";
+                } else if( volleyError instanceof NoConnectionError) {
+                    errorDescription="No Conenction";
+                } else if( volleyError instanceof TimeoutError) {
+                    errorDescription="Time Out";
+                }else
+                {
+                    errorDescription="Connection Error";
+                }
+                Toast.makeText(getActivity(), errorDescription,Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> param = new HashMap<String,String>();
+
+
+
+                return param;
+            }
+        };
+        req.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(req);
+
+
+
+    }
+
+    public void getLessonsOnFilterDate(String Date){
+        if(UPCOMING_ARCHIVE) {
+            lessonsArrayList.clear();
+            getArchiveLessonsOnDate(Date);
+        }else{
+            lessonsArrayList.clear();
+            getUpComingLessonsByDate(Date);
+        }
+        dialog.dismiss();
+
+    }
+
+
+
+    public void getTeacherStudents(RecyclerView recyclerView){
+
+        studentsArray.clear();
+        pd= new SweetAlertDialog(getActivity(), SweetAlertDialog.PROGRESS_TYPE);
+        pd.getProgressHelper().setBarColor(Color.parseColor("#f47b00"));
+        pd.setTitleText("logging out...");
+        pd.setCancelable(false);
+        pd.show();
+
+
+
+
+        // if you are using php
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        String url =   Config.url + "getTeacherStudents.php";
+
+
+
+
+
+        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+                // Toast.makeText(getApplicationContext(),s,Toast.LENGTH_LONG).show();
+
+
+
+
+                try {
+                    JSONObject o=new JSONObject(s);
+                    JSONArray arr=o.getJSONArray("result");
+
+                    for(int i=0;i<arr.length();i++) {
+                        JSONObject x = arr.getJSONObject(i);
+                        String id = x.getString("contract_id");
+                        String student_email = x.getString("student_email");
+                        String teacher_email = x.getString("teacher_email");
+                        String date= x.getString("date");
+                        String student_name = x.getString("student_name");
+                        String teacher_name= x.getString("teacher_name");
+                        int n_lessons= x.getInt("n_lessons");
+                        int n_left=x.getInt("n_lessonsLeft");
+                        getStudentsInfo(student_email,teacher_email,date,teacher_name,n_lessons,n_left,recyclerView);
+
+
+
+
+
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                pd.dismiss();
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                pd.dismiss();
+                String errorDescription = "";
+                if( volleyError instanceof NetworkError) {
+                    errorDescription="Network Error";
+                } else if( volleyError instanceof ServerError) {
+                    errorDescription="Server Error";
+                } else if( volleyError instanceof AuthFailureError) {
+                    errorDescription="AuthFailureError";
+                } else if( volleyError instanceof ParseError) {
+                    errorDescription="Parse Error";
+                } else if( volleyError instanceof NoConnectionError) {
+                    errorDescription="No Conenction";
+                } else if( volleyError instanceof TimeoutError) {
+                    errorDescription="Time Out";
+                }else
+                {
+                    errorDescription="Connection Error";
+                }
+                Toast.makeText(getActivity(), errorDescription,Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> param = new HashMap<String,String>();
+                param.put("email", Current_Teacher.email);
+
+
+
+                return param;
+            }
+        };
+        req.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(req);
+
+
+    }
+
+    public void getStudentsInfo(String student_email, String teacher_email, String date, String teacher_name, int n_lessons,int n_left,RecyclerView recyclerView){
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        String url =   Config.url + "getStudentData.php";
+
+
+
+
+
+        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+                // Toast.makeText(getApplicationContext(),s,Toast.LENGTH_LONG).show();
+
+
+
+
+                try {
+                    JSONObject o=new JSONObject(s);
+                    JSONArray arr=o.getJSONArray("result");
+
+
+                    for(int i=0;i<arr.length();i++) {
+                        JSONObject x = arr.getJSONObject(i);
+                        int id = x.getInt("id");
+                        String email = x.getString("email");
+                        String fname = x.getString("fname");
+                        String lname = x.getString("lname");
+                        String phone = x.getString("phone");
+                        String city = x.getString("city");
+                        String age = x.getString("age");
+                        String lat = x.getString("lat");
+                        String lng = x.getString("lng");
+                        int rate=x.getInt("rate");
+                        String profileImg = x.getString("profileImg");
+
+                        TeacherStudents ts=new TeacherStudents();
+                        ts.setStudentId(id);
+                        ts.setFname(fname);
+                        ts.setEmail(email);
+                        ts.setLname(lname);
+                        ts.setLat(lat);
+                        ts.setLng(lng);
+                        ts.setAge(age);
+                        ts.setCity(city);
+                        ts.setPhone(phone);
+                        ts.setProfileImg(profileImg);
+                        ts.setTeacherName(teacher_name);
+                        ts.setDate(date);
+                        ts.setLessons(String.valueOf(n_lessons));
+                        ts.setLessons_left(n_left);
+                        ts.setRate(rate);
+                        studentsArray.add(ts);
+
+
+
+
+
+
+
+
+
+                    }
+                    prepareArray(studentsArray,recyclerView);
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                pd.dismiss();
+                String errorDescription = "";
+                if( volleyError instanceof NetworkError) {
+                    errorDescription="Network Error";
+                } else if( volleyError instanceof ServerError) {
+                    errorDescription="Server Error";
+                } else if( volleyError instanceof AuthFailureError) {
+                    errorDescription="AuthFailureError";
+                } else if( volleyError instanceof ParseError) {
+                    errorDescription="Parse Error";
+                } else if( volleyError instanceof NoConnectionError) {
+                    errorDescription="No Conenction";
+                } else if( volleyError instanceof TimeoutError) {
+                    errorDescription="Time Out";
+                }else
+                {
+                    errorDescription="Connection Error";
+                }
+                Toast.makeText(getActivity(), errorDescription,Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> param = new HashMap<String,String>();
+                param.put("email",student_email);
+
+
+
+                return param;
+            }
+        };
+        req.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(req);
+
+
+    }
+
+    private void prepareArray(ArrayList<TeacherStudents> studentsArray,RecyclerView recFilter) {
+
+        StudentsFilterAdapter recyclerViewTeacherStudents=new StudentsFilterAdapter(instance,studentsArray);
+        recFilter.setAdapter(recyclerViewTeacherStudents);
+
+
+
+    }
+
+    public void getLessonsFilterByName(String studentEmail){
+        if(UPCOMING_ARCHIVE) {
+            lessonsArrayList.clear();
+            getStudentLessons(studentEmail,"finished");
+        }else{
+            lessonsArrayList.clear();
+            getStudentLessons(studentEmail,"waiting");
+        }
+    }
+
+    private void getStudentLessons(String studentEmail,String status){
+
+        RequestQueue queue = Volley.newRequestQueue(getActivity());
+        String url =   Config.url + "getLessons.php";
+
+
+
+
+
+        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+                // Toast.makeText(getApplicationContext(),s,Toast.LENGTH_LONG).show();
+
+
+
+
+                try {
+                    JSONObject o=new JSONObject(s);
+                    JSONArray arr=o.getJSONArray("result");
+
+
+                    for(int i=0;i<arr.length();i++) {
+                        JSONObject x = arr.getJSONObject(i);
+
+                        Lessons lesson=new Lessons();
+                        lesson.setSession_id(x.getInt("id"));
+                        lesson.setTeacher_email(x.getString("teacher_email"));
+                        lesson.setStudent_email(x.getString("student_email"));
+                        lesson.setDate(x.getString("session_date"));
+                        lesson.setStatus(x.getString("status"));
+                        lesson.setApproved(x.getString("approved"));
+
+                        lessonsArrayList.add(lesson);
+
+
+
+                    }
+                    RecyclerTeacherLessons recyclerTeacherLessons=new RecyclerTeacherLessons(getActivity(),lessonsArrayList);
+                    recyclerView.setAdapter(recyclerTeacherLessons);
+                    dialog.dismiss();
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                pd.dismiss();
+                String errorDescription = "";
+                if( volleyError instanceof NetworkError) {
+                    errorDescription="Network Error";
+                } else if( volleyError instanceof ServerError) {
+                    errorDescription="Server Error";
+                } else if( volleyError instanceof AuthFailureError) {
+                    errorDescription="AuthFailureError";
+                } else if( volleyError instanceof ParseError) {
+                    errorDescription="Parse Error";
+                } else if( volleyError instanceof NoConnectionError) {
+                    errorDescription="No Conenction";
+                } else if( volleyError instanceof TimeoutError) {
+                    errorDescription="Time Out";
+                }else
+                {
+                    errorDescription="Connection Error";
+                }
+                Toast.makeText(getActivity(), errorDescription,Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> param = new HashMap<String,String>();
+                param.put("email",studentEmail);
+                param.put("newStatus",status);
+
+
+
+                return param;
+            }
+        };
+        req.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(req);
+
+
+
+
+    }
+
 }

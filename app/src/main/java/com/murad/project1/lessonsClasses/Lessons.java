@@ -10,6 +10,15 @@ public class Lessons extends Students {
     private String date;
     private String status;
     private boolean todayLesson;
+    private String approved;
+
+    public String getApproved() {
+        return approved;
+    }
+
+    public void setApproved(String approved) {
+        this.approved = approved;
+    }
 
     public boolean isTodayLesson() {
             return todayLesson;

@@ -52,7 +52,8 @@
                 android:layout_marginTop="6dp"
                 android:gravity="center"
                 android:text="TextView"
-                android:textColor="#ba4c00" />
+                android:textColor="#ba4c00"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/moreBtn"

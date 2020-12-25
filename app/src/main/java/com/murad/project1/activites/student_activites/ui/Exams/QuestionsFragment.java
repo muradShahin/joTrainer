@@ -62,7 +62,7 @@ public class QuestionsFragment extends Fragment {
     ArrayList<Question> Questions=new ArrayList<>();
     ArrayList<Question> Questions_20=new ArrayList<>();
     ArrayList<WrongAnswer> wrongAnswersArray=new ArrayList<>();
-        Button next,finish;
+        Button next,finish,finishNow;
         int recyclerPos;
         CardView cardViewScore;
         TextView finalScore;
@@ -90,6 +90,7 @@ public class QuestionsFragment extends Fragment {
         cardViewScore=v.findViewById(R.id.finalCard);
         ScoreLayout=v.findViewById(R.id.scoreLay);
         QuestionsLay=v.findViewById(R.id.questionLay);
+        finishNow=v.findViewById(R.id.finishNow);
         ScoreLayout.setVisibility(GONE);
 
 
@@ -151,6 +152,19 @@ public class QuestionsFragment extends Fragment {
             }
         });
 
+        finishNow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                RecyclerWrongAnswers recyclerWrongAnswers=new RecyclerWrongAnswers(getActivity(),wrongAnswersArray);
+                recyclerViewWrongAns.setAdapter(recyclerWrongAnswers);
+                QuestionsLay.setVisibility(GONE);
+                ScoreLayout.setVisibility(View.VISIBLE);
+                if (Score.finalScore > 30)
+                    Score.finalScore = 30;
+
+                finalScore.setText(Score.finalScore + " / " + Questions_20.size());
+            }
+        });
 
 
     return v;
@@ -199,8 +213,7 @@ public class QuestionsFragment extends Fragment {
 
 
                     }
-                  ArrayList<Integer> numbers = new ArrayList<Integer>();
-                    Random randomGenerator = new Random();
+                     ArrayList<Integer> numbers = new ArrayList<Integer>();
                     while (numbers.size() < 30) {
 
                         int random = (int)(Math.random()*Questions.size());

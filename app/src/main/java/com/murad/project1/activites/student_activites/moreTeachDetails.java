@@ -152,6 +152,14 @@ public class moreTeachDetails extends Fragment {
             }
         });
 
+        Email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent("android.intent.action.SENDTO", Uri.fromParts("mailto", CurrentDetailsOfTeacher.email, null));
+                intent.putExtra("android.intent.extra.SUBJECT", "Enter Subject Here");
+                startActivity(Intent.createChooser(intent, "Select an email client"));
+            }
+        });
 
     return v;
     }

@@ -1,6 +1,10 @@
 package com.murad.project1.RecyclersView;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
+import android.location.Location;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +33,7 @@ import com.murad.project1.lessonsClasses.Lessons;
 import com.murad.project1.supportClasses.Config;
 import com.murad.project1.supportClasses.CurrentLessInfo;
 import com.murad.project1.supportClasses.PerformanceModels;
+import com.murad.project1.supportClasses.Role;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,6 +42,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 
 public class  RecyclerStudentLessons extends    RecyclerView.Adapter<RecyclerStudentLessons.viewitem> {
@@ -63,7 +70,8 @@ public class  RecyclerStudentLessons extends    RecyclerView.Adapter<RecyclerStu
 
         //Declare
         TextView date;
-        Button moreDetails;
+        Button moreDetails,declineBtn,acceptBtn;
+        
 
 
 
@@ -72,6 +80,9 @@ public class  RecyclerStudentLessons extends    RecyclerView.Adapter<RecyclerStu
             super(itemView);
             date=itemView.findViewById(R.id.date);
             moreDetails=itemView.findViewById(R.id.moreBtn);
+            declineBtn=itemView.findViewById(R.id.declineBtn);
+            acceptBtn=itemView.findViewById(R.id.button4);
+
 
 
 
@@ -113,6 +124,97 @@ public class  RecyclerStudentLessons extends    RecyclerView.Adapter<RecyclerStu
 
             }
         });
+
+        Log.i("testRole",Role.role);
+
+
+        if(items.get(position).getStatus().equals("finished")){
+            holder.declineBtn.setVisibility(View.GONE);
+            holder.acceptBtn.setVisibility(View.GONE);
+        }
+        
+        holder.declineBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                declineSession(items.get(position).getSession_id()+"",items,position);
+            }
+        });
+
+        Log.i("testId11",String.valueOf(items.get(position).getSession_id()));
+
+        holder.acceptBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                acceptSessionOnServer(items.get(position).getSession_id()+"",items,position);
+            }
+        });
+
+
+    }
+
+    private void acceptSessionOnServer(String id,ArrayList<Lessons> items,int pos) {
+
+        Dialog dialog=new Dialog(context);
+        dialog.setContentView(R.layout.accept_dialog);
+
+        Button yesBtn=dialog.findViewById(R.id.button2);
+        Button noBtn=dialog.findViewById(R.id.button3);
+
+        yesBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                acceptOnServer(id,items,pos,dialog);
+            }
+        });
+
+
+
+
+        noBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.getWindow().setBackgroundDrawableResource(R.color.transparent);
+
+        dialog.show();
+
+
+
+    }
+
+    private void declineSession(String id,ArrayList<Lessons> items,int pos) {
+
+        Dialog dialog=new Dialog(context);
+        dialog.setContentView(R.layout.decline_dialog);
+
+        Button yesBtn=dialog.findViewById(R.id.button2);
+        Button noBtn=dialog.findViewById(R.id.button3);
+
+        yesBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                declineSessionOnServer(id,items,pos,dialog);
+            }
+        });
+
+
+
+
+        noBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.getWindow().setBackgroundDrawableResource(R.color.transparent);
+
+        dialog.show();
 
 
     }
@@ -218,6 +320,206 @@ public class  RecyclerStudentLessons extends    RecyclerView.Adapter<RecyclerStu
     }
 
 
+    private void declineSessionOnServer(String id, ArrayList<Lessons> items,int pos,Dialog dialog){
+        Log.i("testId11",id);
+        SweetAlertDialog pd = new SweetAlertDialog(context, SweetAlertDialog.PROGRESS_TYPE);
+        pd.getProgressHelper().setBarColor(Color.parseColor("#f47b00"));
+        pd.setTitleText("Loading");
+        pd.setCancelable(false);
+        pd.show();
+
+        RequestQueue queue = Volley.newRequestQueue(context);
+        String url =   Config.url + "approveSession.php";
+
+
+
+
+
+        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+                // Toast.makeText(context,s,Toast.LENGTH_LONG).show();
+                pd.dismissWithAnimation();
+
+
+
+
+                try {
+                    JSONObject o=new JSONObject(s);
+                    String data=o.getString("result");
+                    if(data.equals("1"))
+                    {
+                        sendMessageToTrainer();
+                        items.remove(pos);
+                        dialog.dismiss();
+                        notifyDataSetChanged();
+                    }
+
+
+
+
+
+                } catch (JSONException e) {
+                    pd.dismissWithAnimation();
+                    e.printStackTrace();
+                }
+
+
+                //   progressBar.setVisibility(View.GONE);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                //    progressBar.setVisibility(View.GONE);
+
+                String errorDescription = "";
+                if( volleyError instanceof NetworkError) {
+                    errorDescription="Network Error";
+                } else if( volleyError instanceof ServerError) {
+                    errorDescription="Server Error";
+                } else if( volleyError instanceof AuthFailureError) {
+                    errorDescription="AuthFailureError";
+                } else if( volleyError instanceof ParseError) {
+                    errorDescription="Parse Error";
+                } else if( volleyError instanceof NoConnectionError) {
+                    errorDescription="No Conenction";
+                } else if( volleyError instanceof TimeoutError) {
+                    errorDescription="Time Out";
+                }else
+                {
+                    errorDescription="Connection Error";
+                }
+                Toast.makeText(context, errorDescription,Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> param = new HashMap<String,String>();
+                param.put("id", String.valueOf(items.get(pos).getSession_id()));
+                param.put("approved","false");
+                param.put("status","declined");
+
+
+
+
+                return param;
+            }
+        };
+        req.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(req);
+
+
+
+    }
+
+
+
+    private void acceptOnServer(String id,ArrayList<Lessons> items,int pos,Dialog dialog){
+        SweetAlertDialog pd = new SweetAlertDialog(context, SweetAlertDialog.PROGRESS_TYPE);
+        pd.getProgressHelper().setBarColor(Color.parseColor("#f47b00"));
+        pd.setTitleText("Loading");
+        pd.setCancelable(false);
+        pd.show();
+
+        RequestQueue queue = Volley.newRequestQueue(context);
+        String url =   Config.url + "approveSession.php";
+
+
+
+
+
+        StringRequest req = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+                // Toast.makeText(context,s,Toast.LENGTH_LONG).show();
+                pd.dismissWithAnimation();
+
+
+
+
+                try {
+                    JSONObject o=new JSONObject(s);
+                    String data=o.getString("result");
+                    if(data.equals("1"))
+                    {
+                        sendMessageToTrainer();
+                        items.remove(pos);
+                        dialog.dismiss();
+                        notifyDataSetChanged();
+                    }
+
+
+
+
+
+                } catch (JSONException e) {
+                    dialog.dismiss();
+                    pd.dismissWithAnimation();
+                    e.printStackTrace();
+                }
+
+
+                //   progressBar.setVisibility(View.GONE);
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                //    progressBar.setVisibility(View.GONE);
+
+                String errorDescription = "";
+                if( volleyError instanceof NetworkError) {
+                    errorDescription="Network Error";
+                } else if( volleyError instanceof ServerError) {
+                    errorDescription="Server Error";
+                } else if( volleyError instanceof AuthFailureError) {
+                    errorDescription="AuthFailureError";
+                } else if( volleyError instanceof ParseError) {
+                    errorDescription="Parse Error";
+                } else if( volleyError instanceof NoConnectionError) {
+                    errorDescription="No Conenction";
+                } else if( volleyError instanceof TimeoutError) {
+                    errorDescription="Time Out";
+                }else
+                {
+                    errorDescription="Connection Error";
+                }
+                Toast.makeText(context, errorDescription,Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String,String> param = new HashMap<String,String>();
+                param.put("id",String.valueOf(items.get(pos).getSession_id()));
+                param.put("approved","true");
+                param.put("status","waiting");
+
+
+
+
+                return param;
+            }
+        };
+        req.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(req);
+
+
+
+    }
+
+    private void sendMessageToTrainer() {
+    }
+
+
     // private final View.OnClickListener mOnClickListener = new MyOnClickListener();
 
 
@@ -228,6 +530,8 @@ public class  RecyclerStudentLessons extends    RecyclerView.Adapter<RecyclerStu
 //        String item = mList.get(itemPosition);
 //        Toast.makeText(mContext, item, Toast.LENGTH_LONG).show();
 //    }
+
+
 
 
 }
