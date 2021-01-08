@@ -16,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
@@ -36,6 +38,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.elconfidencial.bubbleshowcase.BubbleShowCase;
+import com.elconfidencial.bubbleshowcase.BubbleShowCaseBuilder;
+import com.elconfidencial.bubbleshowcase.BubbleShowCaseListener;
 import com.murad.project1.R;
 import com.murad.project1.RecyclersView.RecyclerStudentLessons;
 import com.murad.project1.RecyclersView.RecyclerStudentTodayLesson;
@@ -47,6 +52,7 @@ import com.murad.project1.supportClasses.CurrentDetailsOfTeacher;
 import com.murad.project1.supportClasses.Flags;
 import com.murad.project1.supportClasses.PerformanceModels;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -67,6 +73,7 @@ public class Student_profile extends Fragment {
       private TextView StudentName,details,schedual,TeacherName,lessons,lessonsLeft;
       LinearLayout detailsLayout,ScheduleLay;
       ProgressBar progressBar;
+      private int countCase=1;
 
       private ImageView Star1,Star2,Star3,Star4,Star5;
       ArrayList<ArcProgressStackView.Model> models = new ArrayList<>();
@@ -81,6 +88,9 @@ public class Student_profile extends Fragment {
       private TextView todays,upComing,archiveLess;
       private  RecyclerView recyclerViewTodays,recyclerViewComing,recyclerViewArchive;
       private Button moreButton;
+
+      private CardView progCard;
+      private LinearLayout teacherLay;
 
 
     ArcProgressStackView arcProgressStackView;
@@ -114,7 +124,8 @@ public class Student_profile extends Fragment {
        recyclerViewTodays=root.findViewById(R.id.recToday);
        recyclerViewComing=root.findViewById(R.id.recUpComing);
        recyclerViewArchive=root.findViewById(R.id.recArchive);
-
+       teacherLay=root.findViewById(R.id.teachLay);
+        progCard=root.findViewById(R.id.progCard);
 
        models.clear();
 
@@ -360,6 +371,7 @@ public class Student_profile extends Fragment {
         StudentName.setText(Currrent_Student.fname+" "+ Currrent_Student.lname);
         getRate();
         getLessonsInfo();
+        showUseCase(countCase);
     }
 
     private void getRate() {
@@ -384,6 +396,60 @@ public class Student_profile extends Fragment {
                 break;
 
 
+        }
+
+    }
+
+    private void showUseCase(int type) {
+
+        View requiredView=null;
+        String message="";
+        if(type ==1){
+            requiredView=details;
+            message="to see your details , click here";
+        }else if(type==2){
+            requiredView=schedual;
+            message="to see your schedule information and lessons dates , click here";
+
+        }else if(type==3){
+            requiredView=teacherLay;
+            message="to see your Trainer details , click here";
+
+        }
+
+        if(requiredView !=null) {
+            new BubbleShowCaseBuilder(requireActivity())
+                    .title(message)
+                    .backgroundColor(ContextCompat.getColor(requireActivity(), R.color.usecase))
+                    /*.showOnce("BUBBLE_SHOW_CASE_ID1")*/
+                    .image(ContextCompat.getDrawable(requireActivity(), R.mipmap.logo_icon_app))
+                    .targetView(requiredView)
+
+                    .listener(new BubbleShowCaseListener() {
+                        @Override
+                        public void onTargetClick(@NotNull BubbleShowCase bubbleShowCase) {
+
+                        }
+
+                        @Override
+                        public void onCloseActionImageClick(@NotNull BubbleShowCase bubbleShowCase) {
+
+                            if (countCase != 3) {
+                                countCase++;
+                                showUseCase(countCase);
+                            }
+                        }
+
+                        @Override
+                        public void onBackgroundDimClick(@NotNull BubbleShowCase bubbleShowCase) {
+
+                        }
+
+                        @Override
+                        public void onBubbleClick(@NotNull BubbleShowCase bubbleShowCase) {
+
+                        }
+                    }).show();
         }
 
     }

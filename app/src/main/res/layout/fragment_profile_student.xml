@@ -194,6 +194,7 @@
                             android:textStyle="bold" />
 
                         <LinearLayout
+                            android:id="@+id/teachLay"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_marginTop="6dp"
@@ -316,6 +317,7 @@
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/progCard"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/catalogLay"
                     android:layout_marginTop="10dp"
