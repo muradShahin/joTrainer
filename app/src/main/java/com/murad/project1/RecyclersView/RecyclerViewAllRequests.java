@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
@@ -31,6 +32,7 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.murad.project1.R;
 import com.murad.project1.activites.StudentDetails;
+import com.murad.project1.activites.ui.preDefinedFragments.allRequests;
 import com.murad.project1.contractClasses.Requests;
 import com.murad.project1.supportClasses.Config;
 import com.murad.project1.supportClasses.Flags;
@@ -51,12 +53,14 @@ public class  RecyclerViewAllRequests extends    RecyclerView.Adapter< RecyclerV
     ArrayList<Requests> items;
     Context context;
     String studId,StudFname,StudLname,Studemail,StudCity,StudPhone,Studage,StudProfileImg;
+    allRequests fragment;
 
 
-    public  RecyclerViewAllRequests(Context c, ArrayList<Requests> item)
+    public  RecyclerViewAllRequests(Context c, ArrayList<Requests> item, allRequests fragment)
     {
         items=item;
         context=c;
+        this.fragment=fragment;
 
     }
 
@@ -143,8 +147,10 @@ public class  RecyclerViewAllRequests extends    RecyclerView.Adapter< RecyclerV
                 currentStudentDetails.lng=items.get(position).getLng();
                 currentStudentDetails.suggestedTime=items.get(position).getSuggestedTime();
                 Flags.Go_as_ACCEPTED_STUDENTS=false;
-                   Intent i=new Intent(context, StudentDetails.class);
-                   context.startActivity(i);
+                fragment.goToStudentDetails();
+
+
+
             }
         });
 

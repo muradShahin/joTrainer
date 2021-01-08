@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -545,6 +546,9 @@ public class StudentDetails extends AppCompatActivity implements OnMapReadyCallb
                     {
                         Toast.makeText(StudentDetails.this, "the student has been accepted !", Toast.LENGTH_SHORT).show();
                          Flags.REFRESH=true;
+                         Intent i=new Intent(StudentDetails.this,Index.class);
+                         startActivity(i);
+
                          finish();
 
                     }

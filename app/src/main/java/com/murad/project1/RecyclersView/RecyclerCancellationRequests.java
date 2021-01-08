@@ -36,6 +36,7 @@ import com.bumptech.glide.Glide;
 import com.murad.project1.R;
 import com.murad.project1.contractClasses.Messages;
 import com.murad.project1.supportClasses.Config;
+import com.murad.project1.supportClasses.CurrentDetailsOfTeacher;
 import com.murad.project1.supportClasses.Current_Teacher;
 
 import org.json.JSONException;
@@ -170,6 +171,23 @@ public class  RecyclerCancellationRequests extends    RecyclerView.Adapter< Recy
                     String data=o.getString("result");
                     if(data.equals("1"))
                     {
+                        CurrentDetailsOfTeacher.id=-1;
+                        CurrentDetailsOfTeacher.age=null;
+                        CurrentDetailsOfTeacher.carImg=null;
+                        CurrentDetailsOfTeacher.carType=null;
+                        CurrentDetailsOfTeacher.city=null;
+                        CurrentDetailsOfTeacher.email=null;
+                        CurrentDetailsOfTeacher.exp=null;
+                        CurrentDetailsOfTeacher.fname=null;
+                        CurrentDetailsOfTeacher.lname=null;
+                        CurrentDetailsOfTeacher.lng=null;
+                        CurrentDetailsOfTeacher.lat=null;
+                        CurrentDetailsOfTeacher.phone=null;
+                        CurrentDetailsOfTeacher.role=null;
+                        CurrentDetailsOfTeacher.profileImg=null;
+
+
+
                         updateRequestStatus(position,id,studentEmail);
                     }
 

@@ -187,7 +187,7 @@ public class moreTeachDetails extends Fragment {
         Email.setText(CurrentDetailsOfTeacher.email);
         address.setText(CurrentDetailsOfTeacher.city);
         carType.setText(CurrentDetailsOfTeacher.carType);
-        age.setText("Age : "+CurrentDetailsOfTeacher.age);
+        age.setText("Date Of Birth : "+CurrentDetailsOfTeacher.age);
 
         switch (CurrentDetailsOfTeacher.rate){
             case "1":

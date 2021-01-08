@@ -1,15 +1,19 @@
 package com.murad.project1.activites.ui.preDefinedFragments;
 
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +38,8 @@ import com.murad.project1.R;
 import com.murad.project1.RecyclersView.RecyclerAppointmentsMessage;
 import com.murad.project1.RecyclersView.RecyclerCancellationRequests;
 import com.murad.project1.RecyclersView.RecyclerViewAllRequests;
+import com.murad.project1.activites.Index;
+import com.murad.project1.activites.StudentDetails;
 import com.murad.project1.supportClasses.Current_Teacher;
 import com.murad.project1.contractClasses.Messages;
 import com.murad.project1.contractClasses.Requests;
@@ -432,7 +438,7 @@ public class allRequests extends Fragment {
 
     }
     public void prepareArray(ArrayList<Requests> req){
-       RecyclerViewAllRequests recycler=new RecyclerViewAllRequests(getActivity(),req);
+       RecyclerViewAllRequests recycler=new RecyclerViewAllRequests(getActivity(),req,this);
        recyclerView.setAdapter(recycler);
 
 
@@ -595,7 +601,6 @@ public class allRequests extends Fragment {
                         am.setDate(date);
                         am.setId(id);
                         am.setLessId(lessonsId);
-                        am.setStudentEmail(studentId);
                         am.setTeacherEmail(teacher_email);
                         am.setPost(post);
                         am.setStatus(status);
@@ -667,16 +672,18 @@ public class allRequests extends Fragment {
 
     }
 
+    public void goToStudentDetails(){
 
-
-
+        Intent i=new Intent(requireActivity(), StudentDetails.class);
+        requireActivity().startActivity(i);
+    }
 
 
 
     @Override
     public void onResume() {
-        super.onResume();
 
+        super.onResume();
 
     }
 
@@ -685,6 +692,8 @@ public class allRequests extends Fragment {
         super.onStart();
         if(Flags.REFRESH){
             requests.clear();
+             pd.show();
+
             getParticipatingRequests();
             Flags.REFRESH=false;
 
