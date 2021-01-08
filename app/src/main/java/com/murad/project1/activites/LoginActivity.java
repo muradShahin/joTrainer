@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentSender;
@@ -165,6 +166,43 @@ public class LoginActivity extends AppCompatActivity {
 
 
 
+//        forgetPass.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                Dialog dialog=new Dialog(LoginActivity.this);
+//                dialog.setContentView(R.layout.forgetpass);
+//                EditText email=dialog.findViewById(R.id.email);
+//                Button btn=dialog.findViewById(R.id.button5);
+//
+//                btn.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+//                        FirebaseAuth.getInstance().sendPasswordResetEmail(email.getText().toString())
+//                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                    @Override
+//                                    public void onComplete(@NonNull Task<Void> task) {
+//                                        if (task.isSuccessful()) {
+//                                            Log.d("test forget pass", "Email sent.");
+//                                            Toast.makeText(LoginActivity.this,"Email has been sent",Toast.LENGTH_SHORT).show();
+//                                            dialog.dismiss();
+//
+//                                        }
+//                                    }
+//                                });
+//                    }
+//                });
+//
+//
+//                dialog.getWindow().setBackgroundDrawableResource(R.color.transparent);
+//
+//                dialog.show();
+//
+//
+//
+//            }
+//        });
+//
 
 
         //register on click handling
