@@ -220,6 +220,18 @@
                         android:layout_margin="10dp"
                         app:srcCompat="@drawable/car_icon" />
 
+                    <TextView
+                        android:id="@+id/textView35"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/str_license" />
+
+                    <ImageView
+                        android:id="@+id/certificate"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_150sdp"
+                        android:src="@drawable/ic_diploma" />
+
                 </LinearLayout>
 
                 <Button

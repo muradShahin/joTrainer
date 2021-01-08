@@ -72,14 +72,16 @@ public class register extends AppCompatActivity {
     SweetAlertDialog pd;
     private Uri imgUriProfile;
     private Uri imgUriCar;
-    private  StorageReference mStorgeref,mStorgeref2;
+    private Uri certificateImage;
+    private  StorageReference mStorgeref,mStorgeref2,mStorgeref3;
     private StorageTask storageTask;
-    String downloadUriPro,downloadUriCar;
+    String downloadUriPro,downloadUriCar,downloadCertificateUri;
     private FirebaseAuth firebaseAuth;
     String role;
     TextView age;
     private String birthOfDate;
     LinearLayout linearLayoutTeacher;
+    private ImageView certificate;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,8 +102,12 @@ public class register extends AppCompatActivity {
         office=findViewById(R.id.office);
         createButton=findViewById(R.id.createBtn);
         linearLayoutTeacher=findViewById(R.id.instrucLay);
+        certificate=findViewById(R.id.certificate);
+
         mStorgeref= FirebaseStorage.getInstance().getReference("profileImages");
         mStorgeref2=FirebaseStorage.getInstance().getReference("carImages");
+        mStorgeref3=FirebaseStorage.getInstance().getReference("certificates");
+
         firebaseAuth=FirebaseAuth.getInstance();
 
         //getting the role from intent
@@ -150,6 +156,15 @@ public class register extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 FileChooser(2);
+            }
+        });
+
+
+        //certificate on click
+        certificate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FileChooser((3));
             }
         });
 
@@ -216,7 +231,6 @@ public class register extends AppCompatActivity {
                   public void onDateSet(DatePickerFragmentDialog view, int year, int monthOfYear, int dayOfMonth) {
                     birthOfDate=year+" "+(monthOfYear+1)+" "+dayOfMonth;
                     age.setText("birth of date : "+birthOfDate);
-                    Toast.makeText(register.this,birthOfDate,Toast.LENGTH_LONG).show();
                   }
               }).show(getSupportFragmentManager(),"tag");
           }
@@ -443,6 +457,7 @@ public class register extends AppCompatActivity {
                    param.put("lat", "");
                    param.put("lng", "");
                    param.put("profileImg", downloadUriPro);
+                   param.put("certificateImg",downloadCertificateUri);
 
 
 
@@ -479,6 +494,12 @@ public class register extends AppCompatActivity {
             imgUriCar=data.getData();
             carImg.setImageURI(imgUriCar);
             FileUpload(imgUriCar,mStorgeref2,2);
+
+        }else if(requestCode==3 && resultCode==RESULT_OK && data!=null){
+            certificateImage=data.getData();
+            certificate.setImageURI(certificateImage);
+
+            FileUpload(certificateImage,mStorgeref2,3);
 
         }
 
@@ -532,8 +553,11 @@ public class register extends AppCompatActivity {
             public void onSuccess(Uri uri) {
                 if(code==1) {
                     downloadUriPro = uri.toString();
-                }else{
+                }else if(code==2){
                     downloadUriCar=uri.toString();
+                }else{
+                    downloadCertificateUri=uri.toString();
+
                 }
 
             }

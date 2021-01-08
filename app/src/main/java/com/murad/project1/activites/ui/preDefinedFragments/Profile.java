@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -39,6 +40,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.elconfidencial.bubbleshowcase.BubbleShowCase;
+import com.elconfidencial.bubbleshowcase.BubbleShowCaseBuilder;
+import com.elconfidencial.bubbleshowcase.BubbleShowCaseListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -61,6 +65,7 @@ import com.murad.project1.lessonsClasses.Lessons;
 import com.murad.project1.supportClasses.Config;
 import com.murad.project1.supportClasses.DriverClass;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -91,7 +96,8 @@ public class Profile extends Fragment {
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
-
+    private BubbleShowCase bubbleShowCase;
+    int countCase=1;
 
     public Profile() {
         // Required empty public constructor
@@ -319,8 +325,65 @@ public class Profile extends Fragment {
         Glide.with(getActivity()).load(Current_Teacher.carImg).into(carImg);
         getParticipatingRequests();
 
+        showUseCase(1);
+
 
     }
+
+    private void showUseCase(int type) {
+
+        View requiredView=null;
+        String message="";
+        if(type ==1){
+            requiredView=schedual;
+            message="to see today session , click here";
+        }else if(type==2){
+            requiredView=students;
+            message="to see your students , click here";
+
+        }else if(type==3){
+            requiredView=requests;
+            message="to check your notifications and messages , click here";
+
+        }
+
+        if(requiredView !=null) {
+            new BubbleShowCaseBuilder(requireActivity())
+                    .title(message)
+                    .backgroundColor(ContextCompat.getColor(requireActivity(), R.color.usecase))
+                    /*.showOnce("BUBBLE_SHOW_CASE_ID1")*/
+                    .image(ContextCompat.getDrawable(requireActivity(), R.mipmap.logo_icon_app))
+                    .targetView(requiredView)
+
+                    .listener(new BubbleShowCaseListener() {
+                        @Override
+                        public void onTargetClick(@NotNull BubbleShowCase bubbleShowCase) {
+
+                        }
+
+                        @Override
+                        public void onCloseActionImageClick(@NotNull BubbleShowCase bubbleShowCase) {
+
+                            if (countCase != 3) {
+                                countCase++;
+                                showUseCase(countCase);
+                            }
+                        }
+
+                        @Override
+                        public void onBackgroundDimClick(@NotNull BubbleShowCase bubbleShowCase) {
+
+                        }
+
+                        @Override
+                        public void onBubbleClick(@NotNull BubbleShowCase bubbleShowCase) {
+
+                        }
+                    }).show();
+        }
+
+    }
+
     public void getTeacherStudents(){
 
         pd.show();

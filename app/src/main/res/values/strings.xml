@@ -122,4 +122,5 @@
     <string name="finishNow">Finish Now</string>
     <string name="dateOfBirthStr">Date Of Birth</string>
     <string name="noSessionStr">"There is no running sessions at this moment "</string>
+    <string name="str_license">"Training certificate "</string>
 </resources>

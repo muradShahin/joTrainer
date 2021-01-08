@@ -80,7 +80,6 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/roboto_bold"
                 android:gravity="center"
-                android:text="TextView"
                 android:textColor="@android:color/darker_gray"
                 android:textSize="@dimen/_9sdp" />
 
@@ -91,7 +90,6 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/roboto_bold"
                 android:gravity="center"
-                android:text="TextView"
                 android:textColor="@android:color/darker_gray"
                 android:textSize="@dimen/_9sdp" />
         </LinearLayout>

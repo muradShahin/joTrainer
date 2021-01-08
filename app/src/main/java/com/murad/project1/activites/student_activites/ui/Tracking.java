@@ -162,29 +162,31 @@ public class Tracking extends AppCompatActivity implements OnMapReadyCallback {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot key:dataSnapshot.getChildren()){
 
-                    if(key.child("email").getValue().toString().equals(Current_Teacher.email)){
+                    if(key.child("email").getValue() !=null) {
+                        if (key.child("email").getValue().toString().equals(Current_Teacher.email)) {
 
-                        Log.i("test","reached");
-                        double lat=Double.parseDouble(key.child("lat").getValue().toString());
-                        double lng=Double.parseDouble(key.child("lng").getValue().toString());
+                            Log.i("test", "reached");
+                            double lat = Double.parseDouble(key.child("lat").getValue().toString());
+                            double lng = Double.parseDouble(key.child("lng").getValue().toString());
 
-                        Current_Teacher.lat=lat+"";
-                        Current_Teacher.lng=lng+"";
+                            Current_Teacher.lat = lat + "";
+                            Current_Teacher.lng = lng + "";
 
-                      //  teacherLocation=new LatLng(lat,lng);
+                            //  teacherLocation=new LatLng(lat,lng);
 
 
-                        if(lat !=31.9558133 && lng!=35.9118567) {
-                            LatLng location = new LatLng(lat, lng);
-                            map.clear();
-                            BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.car_marker);
-                            map.addMarker(new MarkerOptions().position(location).title("current location").icon(icon));
-                            map.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 14.0f));
+                            if (lat != 31.9558133 && lng != 35.9118567) {
+                                LatLng location = new LatLng(lat, lng);
+                                map.clear();
+                                BitmapDescriptor icon = BitmapDescriptorFactory.fromResource(R.drawable.car_marker);
+                                map.addMarker(new MarkerOptions().position(location).title("current location").icon(icon));
+                                map.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 14.0f));
+                            }
+
+                            break;
+
+
                         }
-
-                        break;
-
-
                     }
 
                 }

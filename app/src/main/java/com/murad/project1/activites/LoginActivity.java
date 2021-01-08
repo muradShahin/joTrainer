@@ -140,7 +140,8 @@ public class LoginActivity extends AppCompatActivity {
                             @Override
                             public void onFailure(@NonNull Exception e) {
 
-                                pd.dismissWithAnimation();
+                               // pd.dismissWithAnimation();
+                                pd.dismiss();
                                 Toast.makeText(LoginActivity.this,"incorrect email or password", Toast.LENGTH_SHORT).show();
                                 email.setError("not valid");
                                 password.setError("not valid");
